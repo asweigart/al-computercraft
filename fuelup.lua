@@ -1,5 +1,8 @@
 -- This is a ComputerCraft script that makes a turtle consume *all* of its fuel (if needed), instead of just one block like the 'refuel' program.
 -- Written by al@inventwithpython.com
+-- Find my other scripts at https://github.com/asweigart/al-computercraft
+-- or http://turtlescripts.com/profile/AlSweigart
+
 
 -- constants for energy amounts of each fuel type
 -- (these must change if ComputerCraft changes it, which is unlikely)
@@ -38,7 +41,7 @@ else
   minLevel = turtle.getFuelLimit()
 end
 
-print('DEBUG: minLevel=',minLevel)
+--print('DEBUG: minLevel=',minLevel)
 
 
 -- remember which slot was selected so we can set it back to that at the end
@@ -61,11 +64,12 @@ for slot=1,16 do
     turtle.select(slot)
     itemData = turtle.getItemDetail()
     if itemData ~= nil and itemData['name'] == 'minecraft:lava_bucket' then
-      print('DEBUG found lava at ', slot)
+      --print('DEBUG found lava at ', slot)
+      --print('Consumed lava at slot #', slot, ' for ', LAVA_ENERGY, ' energy.')
       turtle.refuel(1) -- consume the lava
     end
   end
-  -- really wish Lua had a continue statement that I could put here, no big deal though
+  -- I really wish Lua had a continue statement that I could put here, no big deal though
 end
 
 
@@ -74,7 +78,7 @@ for slot=1,16 do
   turtle.select(slot)
   itemData = turtle.getItemDetail()
   if itemData ~= nil then
-    print('DEBUG item at ', slot)
+    --print('DEBUG item at ', slot)
     local energyGain
     if itemData['name'] == 'ImmersiveEngineering:material' then
       energyGain = COAL_COKE_ENERGY
@@ -97,7 +101,7 @@ for slot=1,16 do
       if refuelStatus ~= 0 then
         totalConsumed = totalConsumed + numConsumed
       end
-      print('DEBUG refueld slot #', slot)
+      --print('DEBUG refueld slot #', slot)
     end
   end
 end

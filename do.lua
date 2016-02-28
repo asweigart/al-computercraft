@@ -1,4 +1,8 @@
 -- This is a ComputerCraft script to easily run turtle API commands from the turtle's command line.
+-- Written by al@inventwithpython.com
+-- Find my other scripts at https://github.com/asweigart/al-computercraft
+-- or http://turtlescripts.com/profile/AlSweigart
+
 
 local tArgs = {...}
 if #tArgs < 1 then
@@ -12,7 +16,7 @@ if #tArgs < 1 then
   print('    dr, dru, drd - drop (up, down)')
   print('    p, pu, pd - place (up, down)')
   print('Example: do r f 2')
-  print('(Turn right, move forward twice.')
+  print('(Turn right, move forward twice.)')
   return
 end
 
@@ -46,9 +50,9 @@ local function inspectAndPrintResults(direction)
   end
 
   if not success then
-    print(icmd .. 'false')
+    print(icmd .. ': false')
   else
-    print(icmd .. 'true')
+    print(icmd .. ': true')
     for k, v in pairs(inspectResults) do
       print(k, '=', v)
     end
@@ -71,68 +75,70 @@ for i = 1,#tArgs do
   end
   if tArgs[i] == 'f' then
     for j = 1,reps do
-        print('forward ' .. tostring(turtle.forward()))
-        if outOfFuel() then return end
+      success, errMsg = turtle.forward()
+      print('forward: ' .. tostring(success) .. ' ' .. errMsg)
+      if not success then return success, errMsg end
     end
   elseif tArgs[i] == 'b' then
     for j = 1,reps do
-        print('back ' .. tostring(turtle.back()))
-        if outOfFuel() then return end
+      success, errMsg = turtle.back()
+      print('back: ' .. tostring(success) .. ' ' .. errMsg)
+      if not success then return success, errMsg end
+
     end
   elseif tArgs[i] == 'l' then
     for j = 1,reps do
-        print('left ' .. tostring(turtle.turnLeft()))
-        if outOfFuel() then return end
+        print('left: ' .. tostring(turtle.turnLeft()))
     end
   elseif tArgs[i] == 'r' then
     for j = 1,reps do
-        print('right ' .. tostring(turtle.turnRight()))
-        if outOfFuel() then return end
+        print('right: ' .. tostring(turtle.turnRight()))
     end
   elseif tArgs[i] == 'up' then
     for j = 1,reps do
-        print('up ' .. tostring(turtle.up()))
-        if outOfFuel() then return end
+      success, errMsg = turtle.up()
+      print('up: ' .. tostring(success) .. ' ' .. errMsg)
+      if not success then return success, errMsg end
     end
   elseif tArgs[i] == 'dn' then
     for j = 1,reps do
-        print('down ' .. tostring(turtle.down()))
-        if outOfFuel() then return end
+      success, errMsg = turtle.down()
+      print('down: ' .. tostring(success) .. ' ' .. errMsg)
+      if not success then return success, errMsg end
     end
   elseif tArgs[i] == 'd' then
     for j = 1,reps do
-        print('dig ' .. tostring(turtle.dig()))
-        if outOfFuel() then return end
+      success, errMsg = turtle.dig()
+      print('dig: ' .. tostring(success) .. ' ' .. errMsg)
+      if not success then return success, errMsg end
     end
   elseif tArgs[i] == 'du' then
     for j = 1,reps do
-        print('digUp ' .. tostring(turtle.digUp()))
-        if outOfFuel() then return end
+      success, errMsg = turtle.digUp()
+      print('digUp: ' .. tostring(success) .. ' ' .. errMsg)
+      if not success then return success, errMsg end
     end
   elseif tArgs[i] == 'dd' then
     for j = 1,reps do
-        print('digDown ' .. tostring(turtle.digDown()))
-        if outOfFuel() then return end
+      success, errMsg = turtle.digDown()
+      print('digDown: ' .. tostring(success) .. ' ' .. errMsg)
+      if not success then return success, errMsg end
     end
   elseif tArgs[i] == 'i' then
     for j = 1,reps do
-        inspectAndPrintResults('')
-        if outOfFuel() then return end
+      inspectAndPrintResults('')
     end
   elseif tArgs[i] == 'iu' then
     for j = 1,reps do
         inspectAndPrintResults('up')
-        if outOfFuel() then return end
     end
   elseif tArgs[i] == 'id' then
     for j = 1,reps do
-        inspectAndPrintResults('down')
-        if outOfFuel() then return end
+      inspectAndPrintResults('down')
     end
   elseif tArgs[i] == 'sel' then
     -- in this case, reps is the inventory number
-    print('select ' .. reps .. ' ' .. tostring(turtle.select(reps)))
-    if outOfFuel() then return end
+    print('select ' .. reps .. ': ' .. tostring(turtle.select(reps)))
   elseif tArgs[i] == 'item' then
     -- display info about the item stack
     local itemData = turtle.getItemDetail()
@@ -145,48 +151,39 @@ for i = 1,#tArgs do
     end
   elseif tArgs[i] == 's' then
     for j = 1,reps do
-        print('suck ' .. tostring(turtle.suck()))
-        if outOfFuel() then return end
+        print('suck: ' .. tostring(turtle.suck()))
     end
   elseif tArgs[i] == 'su' then
     for j = 1,reps do
-        print('suckUp ' .. tostring(turtle.suckUp()))
-        if outOfFuel() then return end
+        print('suckUp: ' .. tostring(turtle.suckUp()))
     end
   elseif tArgs[i] == 'sd' then
     for j = 1,reps do
-        print('suckDown ' .. tostring(turtle.suckDown()))
-        if outOfFuel() then return end
+        print('suckDown: ' .. tostring(turtle.suckDown()))
     end
   elseif tArgs[i] == 'p' then
     for j = 1,reps do
-        print('place ' .. tostring(turtle.place()))
-        if outOfFuel() then return end
+        print('place: ' .. tostring(turtle.place()))
     end
   elseif tArgs[i] == 'pu' then
     for j = 1,reps do
-        print('placeUp ' .. tostring(turtle.placeUp()))
-        if outOfFuel() then return end
+        print('placeUp: ' .. tostring(turtle.placeUp()))
     end
   elseif tArgs[i] == 'pd' then
     for j = 1,reps do
-        print('placeDown ' .. tostring(turtle.placeDown()))
-        if outOfFuel() then return end
+        print('placeDown: ' .. tostring(turtle.placeDown()))
     end
   elseif tArgs[i] == 'dr' then
     for j = 1,reps do
-        print('drop ' .. tostring(turtle.drop()))
-        if outOfFuel() then return end
+        print('drop: ' .. tostring(turtle.drop()))
     end
   elseif tArgs[i] == 'dru' then
     for j = 1,reps do
-        print('dropUp ' .. tostring(turtle.dropUp()))
-        if outOfFuel() then return end
+        print('dropUp: ' .. tostring(turtle.dropUp()))
     end
   elseif tArgs[i] == 'drd' then
     for j = 1,reps do
-        print('dropDown ' .. tostring(turtle.dropDown()))
-        if outOfFuel() then return end
+        print('dropDown: ' .. tostring(turtle.dropDown()))
     end
   end
 end
