@@ -389,139 +389,182 @@ function goto(destx, desty, destz)
 end
 
 
-function doActions(actions, safeMode)
+function doActions(actionsStr, safeMode)
+  [[
+  Complete list of commands:
+  f - move forward
+  b - move backward
+
+  ]]
+  local actions = {}
+  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+
   if safeMode == nil then safeMode = false end
   local i, j, k, v
 
-  -- TODO need to replace tArgs
-  for i = 1,#tArgs do
-    cmd = tArgs[i] -- get the command
-    if #tArgs < i + 1 then
-      reps = 1 -- end of cmdline args, so set this to 1
+  for i = 1,#actions do
+    cmd = actions[i] -- get the command
+    if #actions < i + 1 then
+      reps = 1 -- end of actions, so set this to 1
     else
-      if tonumber(tArgs[i+1]) ~= nil then -- check if next arg is numeric
-        reps = tonumber(tArgs[i+1]) -- set
+      if tonumber(actions[i+1]) ~= nil then -- check if next arg is numeric
+        reps = tonumber(actions[i+1]) -- set
       else
         -- "reps" is actually the next command, so set it to 1
         reps = 1
       end
     end
-    if tArgs[i] == 'f' then
+    if actions[i] == 'f' then
       for j = 1,reps do
         success, errMsg = turtle.forward()
         --print('forward: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'b' then
+    elseif actions[i] == 'b' then
       for j = 1,reps do
         success, errMsg = turtle.back()
         --print('back: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'l' then
+    elseif actions[i] == 'l' then
       for j = 1,reps do
+        turtle.turnLeft()
           --print('left: ' .. tostring(turtle.turnLeft()))
       end
-    elseif tArgs[i] == 'r' then
+    elseif actions[i] == 'r' then
       for j = 1,reps do
+        turtle.turnRight()
           --print('right: ' .. tostring(turtle.turnRight()))
       end
-    elseif tArgs[i] == 'up' then
+    elseif actions[i] == 'up' then
       for j = 1,reps do
         success, errMsg = turtle.up()
         --print('up: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'dn' then
+    elseif actions[i] == 'dn' then
       for j = 1,reps do
         success, errMsg = turtle.down()
         --print('down: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'd' then
+    elseif actions[i] == 'fn' then
+      success = faceNorth()
+      if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
+    elseif actions[i] == 'fs' then
+      success = faceSouth()
+      if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
+    elseif actions[i] == 'fe' then
+      success = faceEast()
+      if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
+    elseif actions[i] == 'fw' then
+      success = faceWest()
+      if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
+    elseif actions[i] == 'd' then
       for j = 1,reps do
         success, errMsg = turtle.dig()
         --print('dig: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'du' then
+    elseif actions[i] == 'du' then
       for j = 1,reps do
         success, errMsg = turtle.digUp()
         --print('digUp: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'dd' then
+    elseif actions[i] == 'dd' then
       for j = 1,reps do
         success, errMsg = turtle.digDown()
         --print('digDown: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'i' then
+    elseif actions[i] == 'i' then
       for j = 1,reps do
         success, inspectResults = turtle.inspect()
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'iu' then
+    elseif actions[i] == 'iu' then
       for j = 1,reps do
           success, inspectResults = turtle.inspectUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'id' then
+    elseif actions[i] == 'id' then
       for j = 1,reps do
         success, inspectResults = turtle.inspectDown()
         if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'sel' then
+    elseif actions[i] == 'sel' then
       -- in this case, reps is the inventory number
       success, errMsg = turtle.select(reps)
       if safeMode and not success then return success, errMsg end
-    elseif tArgs[i] == 's' then
+    elseif actions[i] == 's' then
       for j = 1,reps do
           success, errMsg = turtle.suck()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'su' then
+    elseif actions[i] == 'su' then
       for j = 1,reps do
           success, errMsg = turtle.suckUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'sd' then
+    elseif actions[i] == 'sd' then
       for j = 1,reps do
           success, errMsg = turtle.suckDown()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'p' then
+    elseif actions[i] == 'p' then
       for j = 1,reps do
           success, errMsg = turtle.place()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'pu' then
+    elseif actions[i] == 'pu' then
       for j = 1,reps do
           success, errMsg = turtle.placeUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'pd' then
+    elseif actions[i] == 'pd' then
       for j = 1,reps do
           success, errMsg = turtle.placeDown()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'dr' then
+    elseif actions[i] == 'dr' then
       for j = 1,reps do
           success, errMsg = turtle.drop()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'dru' then
+    elseif actions[i] == 'dru' then
       for j = 1,reps do
           success, errMsg = turtle.dropUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif tArgs[i] == 'drd' then
+    elseif actions[i] == 'drd' then
       for j = 1,reps do
           success, errMsg = turtle.dropDown()
           if safeMode and not success then return success, errMsg end
       end
     end
   end
+end
+
+
+function doOneAction(actionsStr)
+  local action, reps
+  local actions = {}
+  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+
+  -- retrieve the first action and its reps (if given)
+  action = actions[1]
+  reps = tonumber(actions[2]) -- if not a number then this will be nil
+  if reps == nil then
+    reps = 1
+  else
+    table.remove(actions, 2)
+  end
+  table.remove(actions, 1)
+
+  doActions(action .. ' ' .. tostring(reps)) -- do the first action
+
+  return table.concat(actions, ' ')
 end
 
 
@@ -538,41 +581,130 @@ function doActionsSafely(actions)
 end
 
 
-function arrange(itemPattern, dropDir)
-  -- TODO (arranges the turtle's inventory, mostly for making. Can split/combine stacks if needed)
-  -- will try to get it as close as possible. '' for blank, nil for "don't care"
-  -- turtle will drop unwanted items in direction of dropDir if it is not nil. dirs are '', 'down', 'up'
+function getAreaCoverActions(forward, right, goHome)
+  -- returns a string that can be passed to doActions() and doOneAction()
+  -- these actions are for moving the turtle to cover an area
+  local r, actions, r_str, l_str
+  if forward <= 0 or right == 0 then return '' end -- edge case: no movement
+
+  if goHome == nil then goHome = false end
+
+  -- if 'right' was negative, then flip the r_str and l_str actions
+  if right < 0 then
+    right = math.abs(right)
+    r_str = 'l '
+    l_str = 'r '
+  else
+    r_str = 'r '
+    l_str = 'l '
+  end
+
+  actions = ''
+  turnRight = true
+  for r=1,(right-1) do
+    actions = actions .. string.rep('f ', forward-1) -- go to end of column
+    if turnRight then
+      actions = actions .. r_str .. 'f ' .. r_str
+    else
+      actions = actions .. l_str .. 'f ' .. l_str
+    end
+    turnRight = not turnRight
+  end
+
+  -- last column movements
+  actions = actions .. string.rep('f ', forward-1)
+
+  -- add "go home" actions if asked for
+  if goHome then
+    if right % 2 == 1 then
+      -- turtle ends up in the far right corner
+      actions = actions .. r_str .. r_str .. string.rep('f ', forward-1) .. l_str .. string.rep('f ', right-1) .. r_str
+    else
+      -- turtle ends up in the near right corner
+      actions = actions .. r_str .. string.rep('f ', right-1) .. r_str
+    end
+  end
+  return actions
 end
 
 
-function craft(itemName)
+function arrange(itemPattern, dropDirection)
+  -- TODO (arranges the turtle's inventory, mostly for making. Can split/combine stacks if needed)
+  -- will try to get it as close as possible. '' for blank, nil for "don't care"
+  -- turtle will drop unwanted items in direction of dropDir if it is not nil. dirs are '', 'down', 'up'
+  for i=1,16 do
+    -- loop through all the inventory slots
+    itemData = turtle.getItemDetail(i)
+    if itemData == nil or not string.find(itemData['name'], itemName) then
+      -- find an item to swap this with
+      for j=i+1,16 do
+        itemData = turtle.getItemDetail(i)
+        if itemData ~= nil and string.find(itemData['name'], itemName) then
+          -- find a free slot to swap the items in j and i
+          -- TODO LEFT OFF
+        end
+      end
+    end
+  end
+end
+
+
+function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
+
+end
+
+function craft(itemName, amount, suckDirection, dropDirection, slot, timeout)
   -- TODO arranges and then crafts item
   -- need to figure out how to handle getting stuff from chests
 end
 
 
-function dropItem(itemName, amount, _direction)
+function dropItem(itemName, amount)
   if not selectItem(itemName) then return false end
-
-  if _direction == nil then
-    success = turtle.drop(amount)
-  elseif _direction == 'down' then
-    success = turtle.dropDown(amount)
-  elseif _direction == 'up' then
-    success = turtle.dropUp(amount)
-  end
-
-  return success
+  return turtle.drop(amount)
 end
 
 
-function dropItemDown(itemName)
+function dropItemDown(itemName, amount)
+  if not selectItem(itemName) then return false end
+  return turtle.dropDown(amount)
 end
 
 
-function dropItemUp(itemName)
+function dropItemUp(itemName, amount)
+  if not selectItem(itemName) then return false end
+  return turtle.dropUp(amount)
 end
 
+
+function dropAllItem(itemName)
+  while dropItem(itemName) do end
+end
+
+
+function dropAllItemDown(itemName)
+  while dropItemDown(itemName) do end
+end
+
+
+function dropAllItemUp(itemName)
+  while dropItemUp(itemName) do end
+end
+
+
+function suckAll()
+  while turtle.suck(64) do end
+end
+
+
+function suckAllDown()
+  while turtle.suckDown(64) do end
+end
+
+
+function suckAllUp()
+  while turtle.suckUp(64) do end
+end
 
 
 function getFuelPercent()
@@ -583,6 +715,28 @@ end
 function getFuelSpace()
   -- returns amount of fuel free space there is
   return turtle.getFuelLimit() - turtle.getFuelLevel()
+end
+
+
+function getItemNames()
+  local i, itemData, names = {}
+  for i=1,16 do
+    itemData = turtle.getItemDetail(i)
+    table.insert(names, itemData)
+  end
+  return names
+end
+
+
+function selectEmptySlot()
+  local i, itemData
+  for i=1,16 do
+    itemData = turtle.getItemDetail(i)
+    if itemData == nil then
+      return turtle.select(i) -- TODO is this correct? What does select return?
+    end
+  end
+  return false, 'No empty slots'
 end
 
 
@@ -707,5 +861,19 @@ function useGPS()
   else
     x, y, z = gpsx, gpsy, gpsz
     return true, x, y, z
+  end
+end
+
+
+function matchesGPS()
+local gpsx, gpsy, gpsz = gps.locate()
+  if x == nil then
+    return false, 'GPS not available'
+  else
+    if x == gpsx and y == gpsy and z == gpsz then
+      return true
+    else
+      return false, 'Position does not match GPS'
+    end
   end
 end
