@@ -1,5 +1,6 @@
 -- A utility module for ComputerCraft's turtles that adds several functions
 
+local DEBUG = true
 
 local direction = 'north'
 --local x, y, z = gps.locate()
@@ -8,10 +9,11 @@ local y = 0
 local z = 0
 local positionStack = {}
 
--- TODO add fuel checks. Also, if not enough fuel for, say, forward(9999), should we stop at first?
+-- TODO add fuel checks!!!! Also, if not enough fuel for, say, forward(9999), should we stop at first?
 
 function forward(steps)
-  local success, i
+  -- TODO record new position to a file for reloading
+  local success, errMsg, i
   if steps == nil then steps = 1 end
 
   if steps < 0 then
@@ -19,14 +21,14 @@ function forward(steps)
   end
 
   for i=1,steps do
-    success = turtle.forward()
-    if not success then return false end
+    success, errMsg = turtle.forward()
+    if not success then return false, errMsg end
 
     -- track location
     if direction == 'north' then
-      y = y + 1
+      z = z - 1
     elseif direction == 'south' then
-      y = y - 1
+      z = z + 1
     elseif direction == 'west' then
       x = x - 1
     elseif direction == 'east' then
@@ -38,7 +40,8 @@ end
 
 
 function back(steps)
-  local success, i
+  -- TODO record new position to a file for reloading
+  local success, errMsg, i
   if steps == nil then steps = 1 end
 
   if steps < 0 then
@@ -46,14 +49,14 @@ function back(steps)
   end
 
   for i=1,steps do
-    success = turtle.back()
-    if not success then return false end
+    success, errMsg = turtle.back()
+    if not success then return false, errMsg end
 
     -- track location
     if direction == 'north' then
-      y = y - 1
+      z = z + 1
     elseif direction == 'south' then
-      y = y + 1
+      z = z - 1
     elseif direction == 'west' then
       x = x + 1
     elseif direction == 'east' then
@@ -116,7 +119,7 @@ function up(steps)
   for i=1,steps do
     success = turtle.up()
     if not success then return false end
-    z = z + 1 -- track position
+    y = y + 1 -- track position
   end
   return true
 end
@@ -129,13 +132,14 @@ function down(steps)
   for i=1,steps do
     success = turtle.down()
     if not success then return false end
-    z = z - 1 -- track position
+    y = y - 1 -- track position
   end
   return true
 end
 
 
 function face(d)
+  d = string.lower(d)
   if d == 'north' or d == 'n' then
     return faceNorth()
   elseif d == 'south' or d == 's' then
@@ -216,35 +220,51 @@ end
 
 function north(steps)
   if not faceNorth() then return false end
-  return forward(steps)
+  if steps > 0 then
+    return forward(steps)
+  else
+    return back(-steps)
+  end
 end
 
 
 function south(steps)
   if not faceSouth() then return false end
-  return forward(steps)
+    if steps > 0 then
+    return forward(steps)
+  else
+    return back(-steps)
+  end
 end
 
 
 function west(steps)
   if not faceWest() then return false end
-  return forward(steps)
+    if steps > 0 then
+    return forward(steps)
+  else
+    return back(-steps)
+  end
 end
 
 
 function east(steps)
   if not faceEast() then return false end
-  return forward(steps)
+    if steps > 0 then
+    return forward(steps)
+  else
+    return back(-steps)
+  end
 end
 
 
-function pushPosition()
-  table.insert(positionStack, {x=x, y=y, z=z}) -- TODO test this
+function pushPositionSetting()
+  table.insert(positionStack, {x=x, y=y, z=z}) -- TODO test
 end
 
 
-function popPosition()
-  -- TODO
+function popPositionSetting()
+  -- TODO test
   local pos = table.remove(positionStack)
   if pos == nil then return nil end
   x = pos['x']
@@ -341,10 +361,16 @@ function line(x0, y0, z0, x1, y1, z1)
 end
 
 
-function goto(destx, desty, destz)
-  -- TODO (will require bresenhem line alg)
-  local startx, starty, startz = x, y, z
+function goto(destx, desty, destz, faceOriginalDirection)
+  -- returns false if at some point the turtle can't move along the path
+  local startx, starty, startz = getx(), gety(), getz()
   local originalDirection = direction
+
+  if faceOriginalDirection == nil then faceOriginalDirection = true end
+
+  if destx == nil then destx = getx() end
+  if desty == nil then desty = gety() end
+  if destz == nil then destz = getz() end
 
   if startx == destx and starty == desty and startz == destz then
     return true -- edge case; we are already at the destination
@@ -364,33 +390,41 @@ function goto(destx, desty, destz)
     --hare.print(linePoints[i]['x'], ' ', linePoints[i]['y'], ' ', linePoints[i]['z'])
     if linePoints[i]['x'] == 1 then
       faceEast()
-      forward()
+      if DEBUG then print('goto: moving east') end
+      success, errMsg = forward()
     elseif linePoints[i]['x'] == -1 then
       faceWest()
-      forward()
+      if DEBUG then print('goto: moving west') end
+      success, errMsg = forward()
     end
 
     if linePoints[i]['y'] == 1 then
-      faceNorth()
-      forward()
+      if DEBUG then print('goto: moving up') end
+      success, errMsg = up()
     elseif linePoints[i]['y'] == -1 then
-      faceSouth()
-      forward()
+      if DEBUG then print('goto: moving down') end
+      success, errMsg = down()
     end
 
     if linePoints[i]['z'] == 1 then
-      up()
+      faceSouth()
+      if DEBUG then print('goto: moving south') end
+      success, errMsg = forward()
     elseif linePoints[i]['z'] == -1 then
-      down()
+      faceNorth()
+      if DEBUG then print('goto: moving north') end
+      success, errMsg = forward()
     end
+
+    if not success then return false, errMsg end
   end
 
-  face(originalDirection)
+  if faceOriginalDirection then face(originalDirection) end
 end
 
 
 function doActions(actionsStr, safeMode)
-  [[
+  --[[
   Complete list of commands:
   f - move forward
   b - move backward
@@ -547,6 +581,59 @@ function doActions(actionsStr, safeMode)
 end
 
 
+function doReverseMovement(actionStr)
+  -- TODO check for fn and other commands that can't be reversed
+  local actions = {}
+  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+
+  if safeMode == nil then safeMode = false end
+  local i, j, k, v
+
+  for i = 1,#actions do
+    cmd = actions[i] -- get the command
+    if #actions < i + 1 then
+      reps = 1 -- end of actions, so set this to 1
+    else
+      if tonumber(actions[i+1]) ~= nil then -- check if next arg is numeric
+        reps = tonumber(actions[i+1]) -- set
+      else
+        -- "reps" is actually the next command, so set it to 1
+        reps = 1
+      end
+    end
+    if actions[i] == 'f' then
+      for j = 1,reps do
+        success, errMsg = turtle.back()
+        if safeMode and not success then return success, errMsg end
+      end
+    elseif actions[i] == 'b' then
+      for j = 1,reps do
+        success, errMsg = turtle.forward()
+        if safeMode and not success then return success, errMsg end
+      end
+    elseif actions[i] == 'l' then
+      for j = 1,reps do
+        turtle.turnRight()
+      end
+    elseif actions[i] == 'r' then
+      for j = 1,reps do
+        turtle.turnLeft()
+      end
+    elseif actions[i] == 'up' then
+      for j = 1,reps do
+        success, errMsg = turtle.down()
+        if safeMode and not success then return success, errMsg end
+      end
+    elseif actions[i] == 'dn' then
+      for j = 1,reps do
+        success, errMsg = turtle.up()
+        if safeMode and not success then return success, errMsg end
+      end
+    end
+  end
+end
+
+
 function doOneAction(actionsStr)
   local action, reps
   local actions = {}
@@ -570,6 +657,19 @@ end
 
 function canDo(actions)
   -- TODO returns true if it can do all these steps with the fuel it has
+  local actions = {}
+  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+  local totalFuelConsumption = 0
+
+  for i = 1,#actions do
+    if actions[i] == 'f' or actions[i] == 'b' or actions[i] == 'up' or actions[i] == 'dn' then
+      reps = tonumber(actions[i+1])
+      if reps == nil then reps = 1 end
+      totalFuelConsumption = totalFuelConsumption + reps
+    end
+  end
+
+  return totalFuelConsumption <= turtle.getFuelLevel()
 end
 
 
@@ -649,8 +749,170 @@ function arrange(itemPattern, dropDirection)
 end
 
 
-function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
+function suckFrom(suckDirection, amount, faceOriginalDirection) -- TODO add amount param?
+  local success, errMsg
+  local preSuckDirection = getDirection()
 
+  if faceOriginalDirection == nil then faceOriginalDirection = true end
+
+  if amount == nil then amount = 64 end
+
+  -- move and point turtle to the item source
+  if type(suckDirection) ~= 'table' then
+      if suckDirection == 'b' or suckDirection == 'back' then
+        turnLeft(2)
+      elseif suckDirection == 'l' or suckDirection == 'left' then
+        turnLeft()
+      elseif suckDirection == 'r' or suckDirection == 'right' then
+        turnRight()
+      end
+  else
+    if goto(suckDirection[1], suckDirection[2], suckDirection[3], faceOriginalDirection) == false then return false, 'Movement obstructed' end
+    face(suckDirection[4])
+  end
+
+  -- suck items from the item source
+  if suckDirection[4] == 'up' or suckDirection[4] == 'u' then
+    success, errMsg = turtle.suckUp()
+  elseif suckDirection[4] == 'down' or suckDirection[4] == 'd' then
+    success, errMsg = turtle.suckDown()
+  else
+    success, errMsg = turtle.suck()
+  end
+  if DEBUG then print('sucked item') end
+  face(preSuckDirection)
+  return success, errMsg
+end
+
+
+function dropTo(dropDirection, amount, faceOriginalDirection)
+  local success, errMsg
+  local preDropDirection = getDirection()
+
+  if faceOriginalDirection == nil then faceOriginalDirection = true end
+
+  if amount == nil then amount = 64 end
+
+  -- the sucked up item was not the requested one, put it in the drop off area
+  if type(dropDirection) ~= 'table' then
+    if dropDirection == 'b' or dropDirection == 'back' then
+      turnLeft(2)
+    elseif dropDirection == 'l' or dropDirection == 'left' then
+      turnLeft()
+    elseif dropDirection == 'r' or dropDirection == 'right' then
+      turnRight()
+    end
+  else
+    if goto(dropDirection[1], dropDirection[2], dropDirection[3], faceOriginalDirection) == false then return false, 'Movement obstructed' end
+    face(dropDirection[4])
+  end
+
+  -- drop items at the drop destination
+  if dropDirection[4] == 'up' or dropDirection[4] == 'u' then
+    success, errMsg = turtle.dropUp(amount)
+  elseif dropDirection[4] == 'down' or dropDirection[4] == 'd' then
+    success, errMsg = turtle.dropDown(amount)
+  else
+    success, errMsg = turtle.drop(amount)
+  end
+
+  if DEBUG then print('dropped unmatched item at dropsite') end
+
+  if faceOriginalDirection then face(preDropDirection) end
+  return success, errMsg
+end
+
+
+function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
+  -- suck/drop directions can be: forward, back, left, right, up, down, f, b, l, r, u, d, north, south, east, west, n, s, e, w, {x,y,z,nsew}
+  while true do
+    if selectEmptySlot() == false then return false, 'No empty slots' end
+    if DEBUG then print('selected slot #' .. tostring(turtle.getSelectedSlot())) end
+
+    success, errMsg = suckFrom(suckDirection, 64, false)
+
+    if success == false then return false, errMsg end -- nothing left to get
+
+    -- figure out what item it is
+    itemData = turtle.getItemDetail()
+    if itemData ~= nil and string.find(string.lower(itemData['name']), string.lower(itemName)) then
+      if DEBUG then print('sucked ' .. tostring(itemData['count']) .. ' ' .. itemData['name']) end
+      -- put back excess amount of items
+      if itemData['count'] > amount then
+        if suckDirection[4] == 'up' or suckDirection[4] == 'u' then
+          success, errMsg = turtle.dropUp(amount - itemData['count'])
+        elseif suckDirection[4] == 'down' or suckDirection[4] == 'd' then
+          success, errMsg = turtle.dropDown(amount - itemData['count'])
+        else
+          success, errMsg = turtle.drop(amount - itemData['count'])
+        end
+      end
+
+      return true -- NOTE: like the turtle API's suck functions, this might not have collected the full amount requested.
+    end
+
+    success, errMsg = dropTo(dropDirection, 64, false)
+
+    if success == false then return false, errMsg end -- could not drop in that direction
+  end
+end
+
+
+function moveAllBetween(suckDirection, dropDirection)
+  -- TODO finish, moves all items from one source chest to another
+  -- TODO currently this only moves 1 stack at a time
+  local success, tempSlots
+  local origx = getx()
+  local origy = gety()
+  local origz = getz()
+  local origFace = getDirection()
+
+  local noMoreItems = false
+  local cantDropItems = false
+  local finishLastDrop = false
+
+  tempSlots = {}
+  for i=1,16 do
+    if turtle.getItemDetail(i) == nil then
+      table.insert(tempSlots, i)
+    end
+  end
+
+  if DEBUG then print('temp slots: ' .. table.concat(tempSlots, ',')) end
+
+  while true do
+    if selectEmptySlot() == false then return false, 'No empty slots' end
+
+    -- grab items from source
+    for i=1,#tempSlots do
+      turtle.select(tempSlots[i])
+      success = suckFrom(suckDirection, 64, false)
+      if success == false then
+        if i == 1 then
+          noMoreItems = true
+          break
+        else
+          finishLastDrop = true
+        end
+      end
+    end
+    if noMoreItems then break end
+
+    -- drop items at drop site
+    for i=1,#tempSlots do
+      turtle.select(tempSlots[i])
+      success = dropTo(dropDirection, 64, false)
+      if success == false then
+        cantDropItems = true
+        break
+      end
+    end
+
+    if finishLastDrop then break end
+  end
+
+  goto(origx, origy, origz)
+  face(origFace)
 end
 
 function craft(itemName, amount, suckDirection, dropDirection, slot, timeout)
@@ -791,8 +1053,7 @@ end
 
 
 function setDirection(d)
-  local ALL_DIRS = {'north', 'n', 'south', 's', 'east', 'e', 'west', 'w'}
-  if not table.contains(ALL_DIRS, d) then
+  if not table.contains({'north', 'n', 'south', 's', 'east', 'e', 'west', 'w'}, d) then
     return false, '"' .. d .. '" is not a valid direction'
   end
   direction = d
