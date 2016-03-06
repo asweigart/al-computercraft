@@ -9,6 +9,10 @@ local y = 0
 local z = 0
 local positionStack = {}
 
+local recipes = {}
+
+local MAX_STACK_SIZE = 64
+
 -- TODO add fuel checks!!!! Also, if not enough fuel for, say, forward(9999), should we stop at first?
 
 function forward(steps)
@@ -430,6 +434,7 @@ function doActions(actionsStr, safeMode)
   b - move backward
 
   ]]
+  actionsStr = string.lower(actionsStr)
   local actions = {}
   for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
 
@@ -448,24 +453,24 @@ function doActions(actionsStr, safeMode)
         reps = 1
       end
     end
-    if actions[i] == 'f' then
+    if actions[i] == 'f' or actions[i] == 'forward' then
       for j = 1,reps do
         success, errMsg = turtle.forward()
         --print('forward: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'b' then
+    elseif actions[i] == 'b' or actions[i] == 'back' then
       for j = 1,reps do
         success, errMsg = turtle.back()
         --print('back: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'l' then
+    elseif actions[i] == 'l' or actions[i] == 'left' then
       for j = 1,reps do
         turtle.turnLeft()
           --print('left: ' .. tostring(turtle.turnLeft()))
       end
-    elseif actions[i] == 'r' then
+    elseif actions[i] == 'r' or actions[i] == 'right' then
       for j = 1,reps do
         turtle.turnRight()
           --print('right: ' .. tostring(turtle.turnRight()))
@@ -476,102 +481,102 @@ function doActions(actionsStr, safeMode)
         --print('up: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'dn' then
+    elseif actions[i] == 'dn' or actions[i] == 'down' then
       for j = 1,reps do
         success, errMsg = turtle.down()
         --print('down: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'fn' then
+    elseif actions[i] == 'fn' or actions[i] == 'north' then
       success = faceNorth()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
-    elseif actions[i] == 'fs' then
+    elseif actions[i] == 'fs' or actions[i] == 'south' then
       success = faceSouth()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
-    elseif actions[i] == 'fe' then
+    elseif actions[i] == 'fe' or actions[i] == 'east' then
       success = faceEast()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
-    elseif actions[i] == 'fw' then
+    elseif actions[i] == 'fw' or actions[i] == 'west' then
       success = faceWest()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
-    elseif actions[i] == 'd' then
+    elseif actions[i] == 'd' or actions[i] == 'dig' then
       for j = 1,reps do
         success, errMsg = turtle.dig()
         --print('dig: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'du' then
+    elseif actions[i] == 'du' or actions[i] == 'digup' then
       for j = 1,reps do
         success, errMsg = turtle.digUp()
         --print('digUp: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'dd' then
+    elseif actions[i] == 'dd' or actions[i] == 'digdown' then
       for j = 1,reps do
         success, errMsg = turtle.digDown()
         --print('digDown: ' .. tostring(success) .. ' ' .. errMsg)
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'i' then
+    elseif actions[i] == 'i' or actions[i] == 'inspect' then
       for j = 1,reps do
         success, inspectResults = turtle.inspect()
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'iu' then
+    elseif actions[i] == 'iu' or actions[i] == 'inspectup' then
       for j = 1,reps do
           success, inspectResults = turtle.inspectUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'id' then
+    elseif actions[i] == 'id' or actions[i] == 'inspectdown' then
       for j = 1,reps do
         success, inspectResults = turtle.inspectDown()
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'sel' then
+    elseif actions[i] == 'sel' or actions[i] == 'select' then
       -- in this case, reps is the inventory number
       success, errMsg = turtle.select(reps)
       if safeMode and not success then return success, errMsg end
-    elseif actions[i] == 's' then
+    elseif actions[i] == 's' or actions[i] == 'suck' then
       for j = 1,reps do
           success, errMsg = turtle.suck()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'su' then
+    elseif actions[i] == 'su' or actions[i] == 'suckup' then
       for j = 1,reps do
           success, errMsg = turtle.suckUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'sd' then
+    elseif actions[i] == 'sd' or actions[i] == 'suckdown' then
       for j = 1,reps do
           success, errMsg = turtle.suckDown()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'p' then
+    elseif actions[i] == 'p' or actions[i] == 'place' then
       for j = 1,reps do
           success, errMsg = turtle.place()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'pu' then
+    elseif actions[i] == 'pu' or actions[i] == 'placeup' then
       for j = 1,reps do
           success, errMsg = turtle.placeUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'pd' then
+    elseif actions[i] == 'pd' or actions[i] == 'placedown' then
       for j = 1,reps do
           success, errMsg = turtle.placeDown()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'dr' then
+    elseif actions[i] == 'dr' or actions[i] == 'drop' then
       for j = 1,reps do
           success, errMsg = turtle.drop()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'dru' then
+    elseif actions[i] == 'dru' or actions[i] == 'dropup' then
       for j = 1,reps do
           success, errMsg = turtle.dropUp()
           if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'drd' then
+    elseif actions[i] == 'drd' or actions[i] == 'dropdown' then
       for j = 1,reps do
           success, errMsg = turtle.dropDown()
           if safeMode and not success then return success, errMsg end
@@ -581,9 +586,16 @@ function doActions(actionsStr, safeMode)
 end
 
 
-function doReverseMovement(actionStr)
+function doReverseMovement(actionsStr, safeMode)
   -- TODO check for fn and other commands that can't be reversed
+  actionsStr = string.lower(actionsStr)
+  if string.find(actionsStr, 'fn') or string.find(actionsStr, 'fs') or string.find(actionsStr, 'fw') or string.find(actionsStr, 'fe') or
+    string.find(actionsStr, 'north') or string.find(actionsStr, 'south') or string.find(actionsStr, 'west') or string.find(actionsStr, 'east') then
+    return false, 'Cannot reverse actions that include facing compass directions.'
+  end
+
   local actions = {}
+  local word
   for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
 
   if safeMode == nil then safeMode = false end
@@ -601,21 +613,21 @@ function doReverseMovement(actionStr)
         reps = 1
       end
     end
-    if actions[i] == 'f' then
+    if actions[i] == 'f' or actions[i] == 'forward' then
       for j = 1,reps do
         success, errMsg = turtle.back()
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'b' then
+    elseif actions[i] == 'b' or actions[i] == 'back' then
       for j = 1,reps do
         success, errMsg = turtle.forward()
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'l' then
+    elseif actions[i] == 'l' or actions[i] == 'left' then
       for j = 1,reps do
         turtle.turnRight()
       end
-    elseif actions[i] == 'r' then
+    elseif actions[i] == 'r' or actions[i] == 'right' then
       for j = 1,reps do
         turtle.turnLeft()
       end
@@ -624,7 +636,7 @@ function doReverseMovement(actionStr)
         success, errMsg = turtle.down()
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'dn' then
+    elseif actions[i] == 'dn' or actions[i] == 'down' then
       for j = 1,reps do
         success, errMsg = turtle.up()
         if safeMode and not success then return success, errMsg end
@@ -728,23 +740,46 @@ function getAreaCoverActions(forward, right, goHome)
 end
 
 
-function arrange(itemPattern, dropDirection)
+function arrange(recipe, dropDirection)
   -- TODO (arranges the turtle's inventory, mostly for making. Can split/combine stacks if needed)
   -- will try to get it as close as possible. '' for blank, nil for "don't care"
-  -- turtle will drop unwanted items in direction of dropDir if it is not nil. dirs are '', 'down', 'up'
+  -- turtle will drop unwanted items in direction of dropDir
+
+  local origx = getx() -- save original position and direction so it can be reset to this at the end
+  local origy = gety()
+  local origz = getz()
+  local origFace = getDirection()
+
+  -- set item names to lowercase for easier matching
   for i=1,16 do
+    recipe[i] = string.lower(recipe[i])
+  end
+
+  -- loop through inventory and determine if there are items that need to be dropped because they aren't a part of the recipe
+  for i=1,15 do
     -- loop through all the inventory slots
     itemData = turtle.getItemDetail(i)
-    if itemData == nil or not string.find(itemData['name'], itemName) then
-      -- find an item to swap this with
+    --[[[ this is all wrong
+    if (itemData ~= nil and not string.find(string.lower(itemData['name']), recipe[i])) or (itemData == nil and recipe[i] == '') then
+      -- there is a mismatch, so swap the item with the right one in the inventory (if it exists) or with a blank space (if it doesn't exist)
+      local correctItemSwappedIn = false
       for j=i+1,16 do
-        itemData = turtle.getItemDetail(i)
-        if itemData ~= nil and string.find(itemData['name'], itemName) then
-          -- find a free slot to swap the items in j and i
-          -- TODO LEFT OFF
-        end
-      end
+        -- search for the right item
+        itemData2 = turtle.getItemDetail(j)
+        if itemData2 ~= nil and string.lower(itemData2['name'] == recipe[j] then
+
+      dropTo(dropDirection, MAX_STACK_SIZE, false)
     end
+    ]]
+  end
+
+  goto(origx, origy, origz)
+  face(origFace)
+
+  -- LEFT OFF
+  -- loop through inventory and swap any items
+  for i=1,16 do
+    itemData = turtle.getItemDetail(i) -- LEFT OFF
   end
 end
 
@@ -755,26 +790,21 @@ function suckFrom(suckDirection, amount, faceOriginalDirection) -- TODO add amou
 
   if faceOriginalDirection == nil then faceOriginalDirection = true end
 
-  if amount == nil then amount = 64 end
+  if amount == nil then amount = MAX_STACK_SIZE end
 
   -- move and point turtle to the item source
-  if type(suckDirection) ~= 'table' then
-      if suckDirection == 'b' or suckDirection == 'back' then
-        turnLeft(2)
-      elseif suckDirection == 'l' or suckDirection == 'left' then
-        turnLeft()
-      elseif suckDirection == 'r' or suckDirection == 'right' then
-        turnRight()
-      end
-  else
+  if type(suckDirection) == 'string' then
+    success, errMsg = doActionsSafely(suckDirection)
+    if success == false then return false, errMsg end
+  elseif type(suckDirection) == 'table' then
     if goto(suckDirection[1], suckDirection[2], suckDirection[3], faceOriginalDirection) == false then return false, 'Movement obstructed' end
     face(suckDirection[4])
   end
 
   -- suck items from the item source
-  if suckDirection[4] == 'up' or suckDirection[4] == 'u' then
+  if suckDirection[4] == 'up' then
     success, errMsg = turtle.suckUp()
-  elseif suckDirection[4] == 'down' or suckDirection[4] == 'd' then
+  elseif suckDirection[4] == 'down' or suckDirection[4] == 'dn' then
     success, errMsg = turtle.suckDown()
   else
     success, errMsg = turtle.suck()
@@ -791,26 +821,21 @@ function dropTo(dropDirection, amount, faceOriginalDirection)
 
   if faceOriginalDirection == nil then faceOriginalDirection = true end
 
-  if amount == nil then amount = 64 end
+  if amount == nil then amount = MAX_STACK_SIZE end
 
   -- the sucked up item was not the requested one, put it in the drop off area
-  if type(dropDirection) ~= 'table' then
-    if dropDirection == 'b' or dropDirection == 'back' then
-      turnLeft(2)
-    elseif dropDirection == 'l' or dropDirection == 'left' then
-      turnLeft()
-    elseif dropDirection == 'r' or dropDirection == 'right' then
-      turnRight()
-    end
-  else
+  if type(dropDirection) == 'string' then
+    success, errMsg = doActionsSafely(dropDirection)
+    if success == false then return false, errMsg end
+  elseif type(dropDirection) == 'table' then
     if goto(dropDirection[1], dropDirection[2], dropDirection[3], faceOriginalDirection) == false then return false, 'Movement obstructed' end
     face(dropDirection[4])
   end
 
   -- drop items at the drop destination
-  if dropDirection[4] == 'up' or dropDirection[4] == 'u' then
+  if dropDirection[4] == 'up' then
     success, errMsg = turtle.dropUp(amount)
-  elseif dropDirection[4] == 'down' or dropDirection[4] == 'd' then
+  elseif dropDirection[4] == 'down' or dropDirection[4] == 'dn' then
     success, errMsg = turtle.dropDown(amount)
   else
     success, errMsg = turtle.drop(amount)
@@ -829,7 +854,7 @@ function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
     if selectEmptySlot() == false then return false, 'No empty slots' end
     if DEBUG then print('selected slot #' .. tostring(turtle.getSelectedSlot())) end
 
-    success, errMsg = suckFrom(suckDirection, 64, false)
+    success, errMsg = suckFrom(suckDirection, MAX_STACK_SIZE, false)
 
     if success == false then return false, errMsg end -- nothing left to get
 
@@ -851,7 +876,7 @@ function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
       return true -- NOTE: like the turtle API's suck functions, this might not have collected the full amount requested.
     end
 
-    success, errMsg = dropTo(dropDirection, 64, false)
+    success, errMsg = dropTo(dropDirection, MAX_STACK_SIZE, false)
 
     if success == false then return false, errMsg end -- could not drop in that direction
   end
@@ -862,7 +887,7 @@ function moveAllBetween(suckDirection, dropDirection)
   -- TODO finish, moves all items from one source chest to another
   -- TODO currently this only moves 1 stack at a time
   local success, tempSlots
-  local origx = getx()
+  local origx = getx() -- save original position and direction so it can be reset to this at the end
   local origy = gety()
   local origz = getz()
   local origFace = getDirection()
@@ -886,7 +911,7 @@ function moveAllBetween(suckDirection, dropDirection)
     -- grab items from source
     for i=1,#tempSlots do
       turtle.select(tempSlots[i])
-      success = suckFrom(suckDirection, 64, false)
+      success = suckFrom(suckDirection, MAX_STACK_SIZE, false)
       if success == false then
         if i == 1 then
           noMoreItems = true
@@ -901,7 +926,7 @@ function moveAllBetween(suckDirection, dropDirection)
     -- drop items at drop site
     for i=1,#tempSlots do
       turtle.select(tempSlots[i])
-      success = dropTo(dropDirection, 64, false)
+      success = dropTo(dropDirection, MAX_STACK_SIZE, false)
       if success == false then
         cantDropItems = true
         break
@@ -955,17 +980,17 @@ end
 
 
 function suckAll()
-  while turtle.suck(64) do end
+  while turtle.suck(MAX_STACK_SIZE) do end
 end
 
 
 function suckAllDown()
-  while turtle.suckDown(64) do end
+  while turtle.suckDown(MAX_STACK_SIZE) do end
 end
 
 
 function suckAllUp()
-  while turtle.suckUp(64) do end
+  while turtle.suckUp(MAX_STACK_SIZE) do end
 end
 
 
