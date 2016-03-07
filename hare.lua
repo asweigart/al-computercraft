@@ -9,6 +9,9 @@ local y = 0
 local z = 0
 local positionStack = {}
 
+local recordingNow = false
+local recordedMoves = {}
+
 local recipes = {}
 
 local MAX_STACK_SIZE = 64
@@ -28,6 +31,7 @@ function forward(steps)
     success, errMsg = turtle.forward()
     if not success then return false, errMsg end
 
+    if recordingNow then recordMove('f') end
     -- track location
     if direction == 'north' then
       z = z - 1
@@ -56,6 +60,8 @@ function back(steps)
     success, errMsg = turtle.back()
     if not success then return false, errMsg end
 
+    if recordingNow then recordMove('b') end
+
     -- track location
     if direction == 'north' then
       z = z + 1
@@ -77,6 +83,8 @@ function turnLeft(turns)
   for i=1,turns do
     success = turtle.turnLeft()
     if not success then return false end
+
+    if recordingNow then recordMove('l') end
 
     -- track location
     if direction == 'north' then
@@ -101,6 +109,8 @@ function turnRight(turns)
     success = turtle.turnRight()
     if not success then return false end
 
+    if recordingNow then recordMove('r') end
+
     -- track location
     if direction == 'north' then
       direction = 'east'
@@ -123,6 +133,7 @@ function up(steps)
   for i=1,steps do
     success = turtle.up()
     if not success then return false end
+    if recordingNow then recordMove('up') end
     y = y + 1 -- track position
   end
   return true
@@ -136,6 +147,7 @@ function down(steps)
   for i=1,steps do
     success = turtle.down()
     if not success then return false end
+    if recordingNow then recordMove('dn') end
     y = y - 1 -- track position
   end
   return true
@@ -455,36 +467,30 @@ function doActions(actionsStr, safeMode)
     end
     if actions[i] == 'f' or actions[i] == 'forward' then
       for j = 1,reps do
-        success, errMsg = turtle.forward()
-        --print('forward: ' .. tostring(success) .. ' ' .. errMsg)
+        success, errMsg = forward()
         if safeMode and not success then return success, errMsg end
       end
     elseif actions[i] == 'b' or actions[i] == 'back' then
       for j = 1,reps do
-        success, errMsg = turtle.back()
-        --print('back: ' .. tostring(success) .. ' ' .. errMsg)
+        success, errMsg = back()
         if safeMode and not success then return success, errMsg end
       end
     elseif actions[i] == 'l' or actions[i] == 'left' then
       for j = 1,reps do
-        turtle.turnLeft()
-          --print('left: ' .. tostring(turtle.turnLeft()))
+        turnLeft()
       end
     elseif actions[i] == 'r' or actions[i] == 'right' then
       for j = 1,reps do
-        turtle.turnRight()
-          --print('right: ' .. tostring(turtle.turnRight()))
+        turnRight()
       end
     elseif actions[i] == 'up' then
       for j = 1,reps do
-        success, errMsg = turtle.up()
-        --print('up: ' .. tostring(success) .. ' ' .. errMsg)
+        success, errMsg = up()
         if safeMode and not success then return success, errMsg end
       end
     elseif actions[i] == 'dn' or actions[i] == 'down' then
       for j = 1,reps do
-        success, errMsg = turtle.down()
-        --print('down: ' .. tostring(success) .. ' ' .. errMsg)
+        success, errMsg = down()
         if safeMode and not success then return success, errMsg end
       end
     elseif actions[i] == 'fn' or actions[i] == 'north' then
@@ -1162,4 +1168,36 @@ local gpsx, gpsy, gpsz = gps.locate()
       return false, 'Position does not match GPS'
     end
   end
+end
+
+
+function recordMove(move)
+  if (recordedMoves[#recordedMoves] == move) then
+    table.insert(recordedMoves, 2) -- adding a second move of the same type
+  elseif (type(recordedMoves[#recordedMoves]) == 'number') and (recordedMoves[#recordedMoves - 1] == move) then
+    prevCount = table.remove(recordedMoves, #recordedMoves)
+    table.insert(recordedMoves, prevCount + 1) -- increment the existing count
+  else
+    table.insert(recordedMoves, move) -- this is a new, non-repeated move, so just append it
+  end
+end
+
+
+function record()
+  recordedMoves = {}
+  recordingNow = true
+end
+
+
+function stopRecording()
+  recordingNow = false
+  return table.concat(recordedMoves, ' ')
+end
+
+
+function table.print(tab)
+  for k, v in pairs(tab) do
+    io.write(tostring(v) .. ' ')
+  end
+  io.write('\n')
 end
