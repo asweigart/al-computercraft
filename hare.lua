@@ -2,6 +2,18 @@
 
 local DEBUG = true
 
+
+function split(str)
+  -- splits a string up into an array of strings
+  str = string.lower(str)
+  local actions = {}
+  local word
+  for word in str:gmatch("%w+") do table.insert(actions, word) end
+  return actions
+end
+
+local VALID_ACTIONS = split('f forward b back l left r right up dn down fn fs fe fw facenorth facesouth faceeast facewest no north so south ea east we west d dig du digup dd digdown i inspect iu inspectup id inspectdown sel select s suck su suckup sd suckdown p place pu placeup pd placedown dr drop dru dropup drd dropdown')
+
 local direction = 'north'
 --local x, y, z = gps.locate()
 local x = 0
@@ -17,6 +29,8 @@ local recipes = {}
 local MAX_STACK_SIZE = 64
 
 -- TODO add fuel checks!!!! Also, if not enough fuel for, say, forward(9999), should we stop at first?
+
+
 
 function forward(steps)
   -- TODO record new position to a file for reloading
@@ -447,11 +461,16 @@ function doActions(actionsStr, safeMode)
 
   ]]
   actionsStr = string.lower(actionsStr)
-  local actions = {}
-  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+  local actions = split(actionsStr)
 
   if safeMode == nil then safeMode = false end
-  local i, j, k, v
+
+  local i, j, k, v, success, errMsg
+
+  if safeMode then -- check that there are no invalid commands
+    success, errMsg = isValidActionString(actionsStr)
+    if not success then return false, errMsg end
+  end
 
   for i = 1,#actions do
     cmd = actions[i] -- get the command
@@ -493,18 +512,38 @@ function doActions(actionsStr, safeMode)
         success, errMsg = down()
         if safeMode and not success then return success, errMsg end
       end
-    elseif actions[i] == 'fn' or actions[i] == 'north' then
+    elseif actions[i] == 'fn' or actions[i] == 'facenorth' then
       success = faceNorth()
-      if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
-    elseif actions[i] == 'fs' or actions[i] == 'south' then
+      if safeMode and not success then return success end -- TODO figure out if there are error messages for turning, I'm assuming there are not.
+    elseif actions[i] == 'fs' or actions[i] == 'facesouth' then
       success = faceSouth()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
-    elseif actions[i] == 'fe' or actions[i] == 'east' then
+    elseif actions[i] == 'fe' or actions[i] == 'faceeast' then
       success = faceEast()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
-    elseif actions[i] == 'fw' or actions[i] == 'west' then
+    elseif actions[i] == 'fw' or actions[i] == 'facewest' then
       success = faceWest()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning
+    elseif actions[i] == 'no' or actions[i] == 'north' then
+      success = faceNorth()
+      if safeMode and not success then return success end
+      success, errMsg = forward()
+      if safeMode and not success then return success, errMsg end
+    elseif actions[i] == 'so' or actions[i] == 'south' then
+      success = faceSouth()
+      if safeMode and not success then return success end
+      success, errMsg = forward()
+      if safeMode and not success then return success, errMsg end
+    elseif actions[i] == 'we' or actions[i] == 'west' then
+      success = faceWest()
+      if safeMode and not success then return success end
+      success, errMsg = forward()
+      if safeMode and not success then return success, errMsg end
+    elseif actions[i] == 'ea' or actions[i] == 'east' then
+      success = faceEast()
+      if safeMode and not success then return success end
+      success, errMsg = forward()
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'd' or actions[i] == 'dig' then
       for j = 1,reps do
         success, errMsg = turtle.dig()
@@ -600,9 +639,7 @@ function doReverseMovement(actionsStr, safeMode)
     return false, 'Cannot reverse actions that include facing compass directions.'
   end
 
-  local actions = {}
-  local word
-  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+  local actions = split(actionsStr)
 
   if safeMode == nil then safeMode = false end
   local i, j, k, v
@@ -654,8 +691,7 @@ end
 
 function doOneAction(actionsStr)
   local action, reps
-  local actions = {}
-  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+  local actions = split(actionsStr)
 
   -- retrieve the first action and its reps (if given)
   action = actions[1]
@@ -673,10 +709,9 @@ function doOneAction(actionsStr)
 end
 
 
-function canDo(actions)
+function canDo(actionsStr)
   -- TODO returns true if it can do all these steps with the fuel it has
-  local actions = {}
-  for word in actionsStr:gmatch("%w+") do table.insert(actions, word) end
+  local actions = split(actionsStr)
   local totalFuelConsumption = 0
 
   for i = 1,#actions do
@@ -746,7 +781,7 @@ function getAreaCoverActions(forward, right, goHome)
 end
 
 
-function arrange(recipe, dropDirection)
+function arrange(recipe, discardDirection)
   -- TODO (arranges the turtle's inventory, mostly for making. Can split/combine stacks if needed)
   -- will try to get it as close as possible. '' for blank, nil for "don't care"
   -- turtle will drop unwanted items in direction of dropDir
@@ -761,32 +796,95 @@ function arrange(recipe, dropDirection)
     recipe[i] = string.lower(recipe[i])
   end
 
-  -- loop through inventory and determine if there are items that need to be dropped because they aren't a part of the recipe
-  for i=1,15 do
-    -- loop through all the inventory slots
+  -- special case: check if everything is already in the correct spot
+  local alreadyCorrect = true
+  for i=1,16 do
     itemData = turtle.getItemDetail(i)
-    --[[[ this is all wrong
-    if (itemData ~= nil and not string.find(string.lower(itemData['name']), recipe[i])) or (itemData == nil and recipe[i] == '') then
-      -- there is a mismatch, so swap the item with the right one in the inventory (if it exists) or with a blank space (if it doesn't exist)
-      local correctItemSwappedIn = false
-      for j=i+1,16 do
-        -- search for the right item
-        itemData2 = turtle.getItemDetail(j)
-        if itemData2 ~= nil and string.lower(itemData2['name'] == recipe[j] then
-
-      dropTo(dropDirection, MAX_STACK_SIZE, false)
+    if (itemData == nil and not (recipe[i] == nil or recipe[i] == '')) or (itemData ~= nil and string.find(string.lower(itemData['name']), recipe[i])) then
+      alreadyCorrect = false
+      break
     end
-    ]]
   end
+  if alreadyCorrect then return true end
+
+  -- there must be at least one empty slot.
+  emptySlot = selectEmptySlot()
+  if emptySlot == false then return false, 'No empty slots' end
+
+  -- loop through inventory and determine if there are items that need to be dropped because they aren't a part of the recipe
+  local discardItemsInSlots = {}
+  for i=1,16 do
+    -- loop through all the inventory slots
+    local notInRecipe = true
+    for j=1,#recipe do
+      itemData = turtle.getItemDetail(j)
+      if string.find(string.lower(itemData['name']), recipe[i]) then
+        notInRecipe = false
+        break
+      end
+    end
+    if notInRecipe then
+      table.insert(discardItemsInSlots, i)
+    end
+  end
+
+  if #discardItemsInSlots > 0 then
+
+    for i=1,#discardItemsInSlots do
+      --discardSlots
+    end
+  end
+
+  -- TODO any remaining items that are in the inventory should be swapped to their proper place
+  for i=1,15 do
+  end
+
+  -- TODO pickout items still needed for the recipe, and when found put them in the proper slot
+
+  -- TODO craft the item, then place it in the result direction
 
   goto(origx, origy, origz)
   face(origFace)
+end
 
-  -- LEFT OFF
-  -- loop through inventory and swap any items
-  for i=1,16 do
-    itemData = turtle.getItemDetail(i) -- LEFT OFF
+
+function isReversibleActionString(actionsStr)
+  -- the movements in a string of commands is not reversible if it contains compass direction commands
+  local actions = split(actionsStr)
+  for i=1,#actions do
+    if actions[i] == 'fn' or actions[i] == 'fs' or actions[i] == 'fe' or actions[i] == 'fw' or
+      actions[i] == 'facenorth' or actions[i] == 'facesouth' or actions[i] == 'faceeast' or actions[i] == 'facewest' or
+      actions[i] == 'no' or actions[i] == 'so' or actions[i] == 'ea' or actions[i] == 'we' or
+      actions[i] == 'north' or actions[i] == 'south' or actions[i] == 'east' or actions[i] == 'west' then
+        return false, 'Action "' .. actions[i] .. '" is not a reversible movement'
+    end
   end
+  return true
+end
+
+
+function isValidActionString(actionStr)
+  local actions = split(actionStr)
+  local expectCmd = true -- commands are expected after other commands or rep numbers or at the start
+  for i=1,#actions do
+    if expectCmd and not table.contains(VALID_ACTIONS, actions[i]) then
+      return false, 'Expected a command but found "' .. tostring(actions[i]) .. '"'
+    end
+
+    if not expectCmd and (not table.contains(VALID_ACTIONS, actions[i]) and tonumber(actions[i]) == nil) then
+      return false, 'Expected a command or reps number but found "' .. tostring(actions[i]) .. '"'
+    end
+
+    if expectCmd then
+      expectCmd = false -- next action can be a command OR reps number, it doesn't HAVE to be a command
+    end
+
+    if tonumber(actions[i]) == nil then
+      -- the command was a reps number, so the next action MUST be a command
+      expectCmd = true
+    end
+  end
+  return true
 end
 
 
@@ -822,6 +920,7 @@ end
 
 
 function dropTo(dropDirection, amount, faceOriginalDirection)
+  -- TODO how do they drop multiple slots worth of items?
   local success, errMsg
   local preDropDirection = getDirection()
 
@@ -883,7 +982,6 @@ function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
     end
 
     success, errMsg = dropTo(dropDirection, MAX_STACK_SIZE, false)
-
     if success == false then return false, errMsg end -- could not drop in that direction
   end
 end
@@ -1191,6 +1289,11 @@ end
 
 function stopRecording()
   recordingNow = false
+  return table.concat(recordedMoves, ' ')
+end
+
+
+function getRecording()
   return table.concat(recordedMoves, ' ')
 end
 
