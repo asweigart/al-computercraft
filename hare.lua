@@ -1,5 +1,8 @@
 -- A utility module for ComputerCraft's turtles that adds several functions
 
+-- TODO switch from return values to exceptions for errors
+-- TODO call hasFuelFor for various events
+
 local DEBUG = true
 
 
@@ -29,7 +32,6 @@ local recipes = {}
 local MAX_STACK_SIZE = 64
 
 -- TODO add fuel checks!!!! Also, if not enough fuel for, say, forward(9999), should we stop at first?
-
 
 
 function forward(steps)
@@ -690,6 +692,7 @@ end
 
 
 function doOneAction(actionsStr)
+  -- TODO figure this out, does this return (success, errMsg) or (actionsStr)? Should we be using return values for errors?
   local action, reps
   local actions = split(actionsStr)
 
@@ -703,13 +706,16 @@ function doOneAction(actionsStr)
   end
   table.remove(actions, 1)
 
-  doActions(action .. ' ' .. tostring(reps)) -- do the first action
+  if DEBUG then print('doing one action: ' .. action .. ' ' .. tostring(reps)) end
+  success, errMsg = doActions(action .. ' ' .. tostring(reps)) -- do the first action
+  if success == false then return success, errMsg end
 
+  if DEBUG then print('returning from doOneAction: ' .. table.concat(actions, ' ')) end
   return table.concat(actions, ' ')
 end
 
 
-function canDo(actionsStr)
+function hasFuelFor(actionsStr)
   -- TODO returns true if it can do all these steps with the fuel it has
   local actions = split(actionsStr)
   local totalFuelConsumption = 0
@@ -919,42 +925,52 @@ function suckFrom(suckDirection, amount, faceOriginalDirection) -- TODO add amou
 end
 
 
-function dropTo(dropDirection, amount, faceOriginalDirection)
+function dropAt(dropSite, slots, amount, faceOriginalDirection)
+  -- dropSite can be {x, y, z, nsew} or an action string with a drop action (must be reversible)
+  -- the amount is dropped from each of the slots. nil slots means the current slot (or whatever is in the action string). nil amount means MAX_STACK_SIZE
   -- TODO how do they drop multiple slots worth of items?
+
+  -- TODO use doActions() for the direction, just verify it has a drop/dropup/dropdown command in it. Do the same for suck
   local success, errMsg
   local preDropDirection = getDirection()
 
   if faceOriginalDirection == nil then faceOriginalDirection = true end
-
   if amount == nil then amount = MAX_STACK_SIZE end
 
   -- the sucked up item was not the requested one, put it in the drop off area
-  if type(dropDirection) == 'string' then
-    success, errMsg = doActionsSafely(dropDirection)
-    if success == false then return false, errMsg end
-  elseif type(dropDirection) == 'table' then
-    if goto(dropDirection[1], dropDirection[2], dropDirection[3], faceOriginalDirection) == false then return false, 'Movement obstructed' end
-    face(dropDirection[4])
-  end
+  if type(dropSite) == 'string' then
+    success, errMsg = isReversibleActionString(dropSite)
+    if not success then return false, errMsg end
 
-  -- drop items at the drop destination
-  if dropDirection[4] == 'up' then
-    success, errMsg = turtle.dropUp(amount)
-  elseif dropDirection[4] == 'down' or dropDirection[4] == 'dn' then
-    success, errMsg = turtle.dropDown(amount)
-  else
-    success, errMsg = turtle.drop(amount)
+    while true do
+      success, errMsg = doOneAction(dropSite)
+      if success == false then return false, errMsg end
+    end
+  elseif type(dropSite) == 'table' then
+    if goto(dropSite[1], dropSite[2], dropSite[3], faceOriginalDirection) == false then return false, 'Movement obstructed' end
+    face(dropDirection[4])
+
+    -- drop items at the drop destination
+    if dropDirection[4] == 'up' then
+      success, errMsg = turtle.dropUp(amount)
+    elseif dropDirection[4] == 'down' or dropDirection[4] == 'dn' then
+      success, errMsg = turtle.dropDown(amount)
+    else
+      success, errMsg = turtle.drop(amount)
+    end
+
   end
 
   if DEBUG then print('dropped unmatched item at dropsite') end
 
+  -- TODO should always return to the original place/orientation
   if faceOriginalDirection then face(preDropDirection) end
   return success, errMsg
 end
 
 
 function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
-  -- suck/drop directions can be: forward, back, left, right, up, down, f, b, l, r, u, d, north, south, east, west, n, s, e, w, {x,y,z,nsew}
+  -- suck/drop directions can be: {x,y,z,nsew} or an action string with suck/drop commands
   while true do
     if selectEmptySlot() == false then return false, 'No empty slots' end
     if DEBUG then print('selected slot #' .. tostring(turtle.getSelectedSlot())) end
@@ -981,7 +997,7 @@ function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
       return true -- NOTE: like the turtle API's suck functions, this might not have collected the full amount requested.
     end
 
-    success, errMsg = dropTo(dropDirection, MAX_STACK_SIZE, false)
+    success, errMsg = dropAt(dropDirection, MAX_STACK_SIZE, false)
     if success == false then return false, errMsg end -- could not drop in that direction
   end
 end
@@ -1009,9 +1025,9 @@ function moveAllBetween(suckDirection, dropDirection)
 
   if DEBUG then print('temp slots: ' .. table.concat(tempSlots, ',')) end
 
-  while true do
-    if selectEmptySlot() == false then return false, 'No empty slots' end
+  if selectEmptySlot() == false then return false, 'No empty slots' end
 
+  while true do
     -- grab items from source
     for i=1,#tempSlots do
       turtle.select(tempSlots[i])
@@ -1030,7 +1046,7 @@ function moveAllBetween(suckDirection, dropDirection)
     -- drop items at drop site
     for i=1,#tempSlots do
       turtle.select(tempSlots[i])
-      success = dropTo(dropDirection, MAX_STACK_SIZE, false)
+      success = dropAt(dropDirection, MAX_STACK_SIZE, false)
       if success == false then
         cantDropItems = true
         break
