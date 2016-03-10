@@ -455,6 +455,7 @@ function goto(destx, desty, destz, faceOriginalDirection)
 end
 
 
+
 function doActions(actionsStr, safeMode)
   --[[
   Complete list of commands:
@@ -721,7 +722,8 @@ function hasFuelFor(actionsStr)
   local totalFuelConsumption = 0
 
   for i = 1,#actions do
-    if actions[i] == 'f' or actions[i] == 'b' or actions[i] == 'up' or actions[i] == 'dn' then
+    if actions[i] == 'f' or actions[i] == 'forward' or actions[i] == 'b' or actions[i] == 'back' or actions[i] == 'up' or actions[i] == 'dn' or actions[i] == 'down' or
+      actions[i] == 'no' or actions[i] == 'north' or actions[i] == 'so' or actions[i] == 'south' or actions[i] == 'we' or actions[i] == 'west' or actions[i] == 'ea' or actions[i] == 'east' then
       reps = tonumber(actions[i+1])
       if reps == nil then reps = 1 end
       totalFuelConsumption = totalFuelConsumption + reps
@@ -787,10 +789,26 @@ function getAreaCoverActions(forward, right, goHome)
 end
 
 
+function inventoryMatches(recipe)
+  -- special case: check if everything is already in the correct spot
+  local matches = true
+  for i=1,16 do
+    itemData = turtle.getItemDetail(i)
+    if (itemData == nil and not (recipe[i] == nil or recipe[i] == '')) or (itemData ~= nil and string.find(string.lower(itemData['name']), recipe[i])) then
+      matches = false
+      break
+    end
+  end
+  return matches
+end
+
+
 function arrange(recipe, discardDirection)
   -- TODO (arranges the turtle's inventory, mostly for making. Can split/combine stacks if needed)
   -- will try to get it as close as possible. '' for blank, nil for "don't care"
   -- turtle will drop unwanted items in direction of dropDir
+
+  -- NOTE: Due to the nature of having to swap, we can't arrange items in the case where all the recipe's items have filled all 16 spaces of the inventory but are in the wrong order.
 
   local origx = getx() -- save original position and direction so it can be reset to this at the end
   local origy = gety()
@@ -803,24 +821,16 @@ function arrange(recipe, discardDirection)
   end
 
   -- special case: check if everything is already in the correct spot
-  local alreadyCorrect = true
-  for i=1,16 do
-    itemData = turtle.getItemDetail(i)
-    if (itemData == nil and not (recipe[i] == nil or recipe[i] == '')) or (itemData ~= nil and string.find(string.lower(itemData['name']), recipe[i])) then
-      alreadyCorrect = false
-      break
-    end
-  end
-  if alreadyCorrect then return true end
+  if inventoryMatches(recipe) then return true end
 
-  -- there must be at least one empty slot.
+  -- there must be at least one empty slot (after getting rid of all non-recipe items)
   emptySlot = selectEmptySlot()
   if emptySlot == false then return false, 'No empty slots' end
 
   -- loop through inventory and determine if there are items that need to be dropped because they aren't a part of the recipe
   local discardItemsInSlots = {}
   for i=1,16 do
-    -- loop through all the inventory slots
+    -- loop through all the inventory slots, note any slots with non-recipe items
     local notInRecipe = true
     for j=1,#recipe do
       itemData = turtle.getItemDetail(j)
@@ -829,28 +839,47 @@ function arrange(recipe, discardDirection)
         break
       end
     end
-    if notInRecipe then
-      table.insert(discardItemsInSlots, i)
-    end
+    if notInRecipe then table.insert(discardItemsInSlots, i) end
   end
 
   if #discardItemsInSlots > 0 then
-
-    for i=1,#discardItemsInSlots do
-      --discardSlots
-    end
+    -- travel to discard area and drop off the to-be-discard items, then return
+    dropAt(discardDirection, discardItemsInSlots)
   end
 
   -- TODO any remaining items that are in the inventory should be swapped to their proper place
   for i=1,15 do
+    itemData = turtle.getItemDetail(i)
+    if recipe[i] ~= nil and recipe[i] ~= '' and itemData ~= nil and not string.find(string.lower(itemData['name']), recipe[i])  then
+      -- the item in slot i is not the item the recipe dictates. Figure out if the recipe's item is in another slot
+      for j=i,16 do
+        itemData2 = turtle.getItemDetail(j)
+        if string.find(string.lower(itemData2['name'], recipe[i])) then
+          -- we've found the item for slot i; it is in slot j. We should move it to slot i
+          turtle.select(i) -- move items in slot i to a free spot
+          if DEBUG then
+            print('Moving ' .. turtle.getItemDetail(i)['name'] .. ' from slot ' .. tostring(i) .. ' to empty slot ')
+          end
+          turtle.transferTo(selectEmptySlot(), MAX_STACK_SIZE)
+          turtle.select(j) -- move items in slot i to slot j where they belong
+          if DEBUG then
+            print('Moving ' .. turtle.getItemDetail(j)['name'] .. ' from slot ' .. tostring(j) .. ' to slot ' .. tostring(i))
+          end
+          turtle.transferTo(i, MAX_STACK_SIZE)
+          break
+        end
+      end
+    end
   end
 
-  -- TODO pickout items still needed for the recipe, and when found put them in the proper slot
-
-  -- TODO craft the item, then place it in the result direction
-
-  goto(origx, origy, origz)
-  face(origFace)
+  -- special case: check if everything is already in the correct spot
+  if inventoryMatches(recipe) then
+    goto(origx, origy, origz)
+    face(origFace)
+    return true
+  else
+    return false, 'Not all recipe items in inventory'
+  end
 end
 
 
@@ -893,7 +922,7 @@ function isValidActionString(actionStr)
   return true
 end
 
-
+--[[
 function suckFrom(suckDirection, amount, faceOriginalDirection) -- TODO add amount param?
   local success, errMsg
   local preSuckDirection = getDirection()
@@ -923,49 +952,171 @@ function suckFrom(suckDirection, amount, faceOriginalDirection) -- TODO add amou
   face(preSuckDirection)
   return success, errMsg
 end
+]]
+
+function isValidDirectionValue(direction, requiredCmdType)
+  -- a valid "direction value" is either a {x, y, z, compass direction} table or a reversible action string
+  -- requiredCmdType can be either 'suck' or 'drop', and checks the action string for this type of command
 
 
-function dropAt(dropSite, slots, amount, faceOriginalDirection)
-  -- dropSite can be {x, y, z, nsew} or an action string with a drop action (must be reversible)
-  -- the amount is dropped from each of the slots. nil slots means the current slot (or whatever is in the action string). nil amount means MAX_STACK_SIZE
-  -- TODO how do they drop multiple slots worth of items?
-
-  -- TODO use doActions() for the direction, just verify it has a drop/dropup/dropdown command in it. Do the same for suck
-  local success, errMsg
-  local preDropDirection = getDirection()
-
-  if faceOriginalDirection == nil then faceOriginalDirection = true end
-  if amount == nil then amount = MAX_STACK_SIZE end
-
-  -- the sucked up item was not the requested one, put it in the drop off area
-  if type(dropSite) == 'string' then
-    success, errMsg = isReversibleActionString(dropSite)
+  if type(direction) == 'string' then
+    success, errMsg = isReversibleActionString(direction)
     if not success then return false, errMsg end
 
-    while true do
-      success, errMsg = doOneAction(dropSite)
-      if success == false then return false, errMsg end
-    end
-  elseif type(dropSite) == 'table' then
-    if goto(dropSite[1], dropSite[2], dropSite[3], faceOriginalDirection) == false then return false, 'Movement obstructed' end
-    face(dropDirection[4])
-
-    -- drop items at the drop destination
-    if dropDirection[4] == 'up' then
-      success, errMsg = turtle.dropUp(amount)
-    elseif dropDirection[4] == 'down' or dropDirection[4] == 'dn' then
-      success, errMsg = turtle.dropDown(amount)
-    else
-      success, errMsg = turtle.drop(amount)
+    -- check for required command type
+    dirAsTable = split(direction)
+    if (requiredCmdType == 'suck') and (not (table.contains(dirAsTable, 's') or table.contains(dirAsTable, 'sd') or table.contains(dirAsTable, 'su') or
+      table.contains(dirAsTable, 'suck') or table.contains(dirAsTable, 'suckdown') or table.contains(dirAsTable, 'suckup'))) then
+      return false, 'No suck command in action string'
+    elseif (requiredCmdType == 'drop') and (not (table.contains(dirAsTable, 'dr') or table.contains(dirAsTable, 'drd') or table.contains(dirAsTable, 'dru') or
+      table.contains(dirAsTable, 'drop') or table.contains(dirAsTable, 'dropdown') or table.contains(dirAsTable, 'dropup'))) then
+      return false, 'No drop command in action string'
     end
 
+  elseif type(direction) == 'table' then
+    if type(direction[1]) ~= 'number' or type(direction[2]) ~= 'number' or type(direction[3]) ~= 'number' then
+      return false, 'Only numbers can be passed for XYZ coordinates'
+    end
+
+    if direction[4] ~= 'no' and direction[4] ~= 'north' and direction[4] ~= 'so' and direction[4] ~= 'south' and
+      direction[4] ~= 'ea' and direction[4] ~= 'east' and direction[4] ~= 'we' and direction[4] ~= 'west' then
+      return false, '"' .. direction[4] .. '" is not a valid N-S-E-W compass direction'
+    end
+  else
+    return false, '"' .. type(direction) .. '" is an invalid type for the `direction` parameter'
   end
 
-  if DEBUG then print('dropped unmatched item at dropsite') end
+  return true
+end
 
-  -- TODO should always return to the original place/orientation
-  if faceOriginalDirection then face(preDropDirection) end
-  return success, errMsg
+
+function suckAt(direction, slots, amount)
+  local success, errMsg
+  local origDirection = getDirection()
+
+  if amount == nil then amount = MAX_STACK_SIZE end
+
+  success, errMsg = isValidDirectionValue(direction, 'suck')
+  if success == false then return false, errMsg end
+
+  if type(direction) == 'string' then
+    while true do
+      -- check if this is a suck command
+      firstAction = split(actionsStr)[1]
+      local isSuckCmd = firstAction == 's' or firstAction == 'suck' or firstAction == 'sd' or firstAction == 'suckdown' or firstAction == 'suckup' or firstAction == 'su'
+
+      if isSuckCmd then
+        -- run the suck command for every slot in slots
+        for i=1,#slots do
+          if DEBUG then print('Sucking to slot #' .. tostring(slots[i])) end
+          turtle.select(slots[i])
+          success, errMsg = doOneAction(directionTab[1])
+          if success == false then return false, errMsg end
+        end
+      else
+        success, errMsg = doOneAction(firstAction .. ' ' .. amount)
+        if success == false then return false, errMsg end
+      end
+    end
+
+    -- return to original place
+    doReverseMovement(direction)
+
+  elseif type(direction) == 'table' then
+    local origx = getx()
+    local origy = gety()
+    local origz = getz()
+
+    -- direction is an xyz coordinate with direction
+    if goto(direction[1], direction[2], direction[3], false) == false then return false, 'Movement obstructed' end
+    face(direction[4])
+
+    -- suck items at the suck destination
+    for i=1,#slots do
+      if DEBUG then print('Suckping slot #' .. tostring(slots[i])) end
+      turtle.select(slots[i])
+      if direction[4] == 'up' then
+        success, errMsg = turtle.suckUp(amount)
+      elseif direction[4] == 'down' or direction[4] == 'dn' then
+        success, errMsg = turtle.suckDown(amount)
+      else
+        success, errMsg = turtle.suck(amount)
+      end
+    end
+
+    if goto(origx, origy, origz) == false then return false, 'Movement obstructed' end
+  end
+
+  if DEBUG then print('sucked items at suck site') end
+
+  if faceOriginalDirection then
+    face(origDirection)
+  end
+end
+
+
+function dropAt(direction, slots, amount)
+  local success, errMsg
+  local origDirection = getDirection()
+
+  if amount == nil then amount = MAX_STACK_SIZE end
+
+  success, errMsg = isValidDirectionValue(direction, 'suck')
+  if success == false then return false, errMsg end
+
+  if type(direction) == 'string' then
+    while true do
+      -- check if this is a drop command
+      firstAction = split(actionsStr)[1]
+      local isDropCmd = firstAction == 'dr' or firstAction == 'drop' or firstAction == 'drd' or firstAction == 'dropdown' or firstAction == 'dropup' or firstAction == 'dru'
+
+      if isDropCmd then
+        -- run the drop command for every slot in slots
+        for i=1,#slots do
+          if DEBUG then print('Dropping slot #' .. tostring(slots[i])) end
+          turtle.select(slots[i])
+          success, errMsg = doOneAction(directionTab[1])
+          if success == false then return false, errMsg end
+        end
+      else
+        success, errMsg = doOneAction(firstAction .. ' ' .. amount)
+        if success == false then return false, errMsg end
+      end
+    end
+
+    -- return to original place
+    doReverseMovement(direction)
+
+  elseif type(direction) == 'table' then
+    local origx = getx()
+    local origy = gety()
+    local origz = getz()
+
+    -- direction is an xyz coordinate with direction
+    if goto(direction[1], direction[2], direction[3], false) == false then return false, 'Movement obstructed' end
+    face(direction[4])
+
+    -- drop items at the drop destination
+    for i=1,#slots do
+      if DEBUG then print('Dropping slot #' .. tostring(slots[i])) end
+      turtle.select(slots[i])
+      if direction[4] == 'up' then
+        success, errMsg = turtle.dropUp(amount)
+      elseif direction[4] == 'down' or direction[4] == 'dn' then
+        success, errMsg = turtle.dropDown(amount)
+      else
+        success, errMsg = turtle.drop(amount)
+      end
+    end
+
+    if goto(origx, origy, origz) == false then return false, 'Movement obstructed' end
+  end
+
+  if DEBUG then print('dropped items at direction') end
+
+  if faceOriginalDirection then
+    face(origDirection)
+  end
 end
 
 
@@ -1060,9 +1211,26 @@ function moveAllBetween(suckDirection, dropDirection)
   face(origFace)
 end
 
-function craft(itemName, amount, suckDirection, dropDirection, slot, timeout)
+
+function getRecipe(itemName)
+  -- TODO find recipe by name
+  -- TODO where to store the recipes? In a file? How can the user add new recipes?
+  -- TODO should recipes be arrays of 9 or 16 items?
+end
+
+function craft(recipe, amount, suckDirection, dropDirection, slot, timeout)
+  -- return value is the slot number where crafted result is
+  -- how do we craft multiple items?
+  -- what if I want to feed this function a list of "you can find this ingredient in this chest", and let it figure out how to make everything?
+  -- when it can't create, it should return an error
+  --arrange()
   -- TODO arranges and then crafts item
   -- need to figure out how to handle getting stuff from chests
+
+  -- TODO pickout items still needed for the recipe, and when found put them in the proper slot
+
+  -- TODO craft the item, then place it in the result direction
+
 end
 
 
@@ -1319,4 +1487,19 @@ function table.print(tab)
     io.write(tostring(v) .. ' ')
   end
   io.write('\n')
+end
+
+
+
+function manufacture(recipe, sourceDirection, resultDirection, discardDirection)
+  -- call arrange to see if the turtle already carries parts for the recipe (discarding any non-recipe items)
+
+  -- check if the turtle can craft the item
+
+  -- if the turtle can't craft the item, then pick out craft items from the source (discarding them if they are non-recipe items)
+
+  -- (if there isn't enough recipe items, then just return false)
+
+  -- put the resulting crafted item in the result Direction
+
 end
