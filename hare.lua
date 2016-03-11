@@ -59,7 +59,7 @@ function forward(steps)
       x = x + 1
     end
   end
-  if DEBUG then print('Moving forward ' .. steps .. ' steps') end
+  if DEBUG then print('Moved forward ' .. steps .. ' steps') end
   return true
 end
 
@@ -90,7 +90,7 @@ function back(steps)
       x = x - 1
     end
   end
-  if DEBUG then print('Moving back ' .. steps .. ' steps') end
+  if DEBUG then print('Moved back ' .. steps .. ' steps') end
   return true
 end
 
@@ -115,7 +115,7 @@ function turnLeft(turns)
       direction = 'north'
     end
   end
-  if DEBUG then print('Turning left ' .. turns .. ' turns') end
+  if DEBUG then print('Turned left ' .. turns .. ' turns') end
   return true
 end
 
@@ -141,7 +141,7 @@ function turnRight(turns)
       direction = 'north'
     end
   end
-  if DEBUG then print('Turning right ' .. turns .. ' turns') end
+  if DEBUG then print('Turned right ' .. turns .. ' turns') end
   return true
 end
 
@@ -156,7 +156,7 @@ function up(steps)
     if recordingNow then recordMove('up') end
     y = y + 1 -- track position
   end
-  if DEBUG then print('Moving up ' .. steps .. ' steps') end
+  if DEBUG then print('Moved up ' .. steps .. ' steps') end
   return true
 end
 
@@ -171,7 +171,7 @@ function down(steps)
     if recordingNow then recordMove('dn') end
     y = y - 1 -- track position
   end
-  if DEBUG then print('Moving down ' .. steps .. ' steps') end
+  if DEBUG then print('Moved down ' .. steps .. ' steps') end
   return true
 end
 
@@ -961,7 +961,7 @@ end
 
 
 function suckAt(direction, slots, amount)
-  if DEBUG then print('Call: suckAt(' .. direction .. ', ' .. slots .. ', ' .. amount .. ')') end
+  if DEBUG then print('Call: suckAt(' .. direction .. ', ' .. table.tostring(slots) .. ', ' .. amount .. ')') end
   local success, errMsg
   local origDirection = getDirection()
 
@@ -973,6 +973,7 @@ function suckAt(direction, slots, amount)
   if success == false then return false, errMsg end
 
   if type(direction) == 'string' then
+    originalDirection = direction
     while direction ~= '' do
       -- check if this is a suck command
       firstAction = split(direction)[1]
@@ -996,7 +997,7 @@ function suckAt(direction, slots, amount)
     end
 
     -- return to original place
-    doReverseMovement(direction)
+    doReverseMovement(originalDirection)
 
   elseif type(direction) == 'table' then
     local origx = getx()
@@ -1032,7 +1033,7 @@ end
 
 
 function dropAt(direction, slots, amount)
-  if DEBUG then print('Call: dropAt(' .. direction .. ', ' .. slots .. ', ' .. amount .. ')') end
+  if DEBUG then print('Call: dropAt(' .. direction .. ', ' .. table.tostring(slots) .. ', ' .. amount .. ')') end
   local success, errMsg
   local origDirection = getDirection()
 
@@ -1040,10 +1041,11 @@ function dropAt(direction, slots, amount)
 
   if amount == nil then amount = MAX_STACK_SIZE end
 
-  success, errMsg = isValidDirectionValue(direction, 'suck')
+  success, errMsg = isValidDirectionValue(direction, 'drop')
   if success == false then return false, errMsg end
 
   if type(direction) == 'string' then
+    originalDirection = direction
     while direction ~= '' do
       -- check if this is a drop command
       firstAction = split(direction)[1]
@@ -1067,7 +1069,7 @@ function dropAt(direction, slots, amount)
     end
 
     -- return to original place
-    doReverseMovement(direction)
+    doReverseMovement(originalDirection)
 
   elseif type(direction) == 'table' then
     local origx = getx()
@@ -1465,11 +1467,12 @@ function getRecording()
 end
 
 
-function table.print(tab)
+function table.tostring(tab)
+  result = '{'
   for k, v in pairs(tab) do
-    io.write(tostring(v) .. ' ')
+    result = result .. tostring(k) .. ': ' .. tostring(v) .. ', '
   end
-  io.write('\n')
+  return result .. '}'
 end
 
 
@@ -1520,9 +1523,5 @@ end
 alloyrep = {'alloy','alloy','alloy','','alloy','alloy','alloy','','alloy','alloy','alloy','','','','',''}
 
 
-
 -- startup code to run:
-local success, x, y, z = useGPS()
-if success then
-  print('Acquired GPS position: ' .. x .. ', ' .. y .. ', ' .. z)
-end
+useGPS()
