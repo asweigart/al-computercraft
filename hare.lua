@@ -59,6 +59,7 @@ function forward(steps)
       x = x + 1
     end
   end
+  if DEBUG then print('Moving forward ' .. steps .. ' steps') end
   return true
 end
 
@@ -89,6 +90,7 @@ function back(steps)
       x = x - 1
     end
   end
+  if DEBUG then print('Moving back ' .. steps .. ' steps') end
   return true
 end
 
@@ -113,6 +115,7 @@ function turnLeft(turns)
       direction = 'north'
     end
   end
+  if DEBUG then print('Turning left ' .. turns .. ' turns') end
   return true
 end
 
@@ -138,6 +141,7 @@ function turnRight(turns)
       direction = 'north'
     end
   end
+  if DEBUG then print('Turning right ' .. turns .. ' turns') end
   return true
 end
 
@@ -152,6 +156,7 @@ function up(steps)
     if recordingNow then recordMove('up') end
     y = y + 1 -- track position
   end
+  if DEBUG then print('Moving up ' .. steps .. ' steps') end
   return true
 end
 
@@ -166,6 +171,7 @@ function down(steps)
     if recordingNow then recordMove('dn') end
     y = y - 1 -- track position
   end
+  if DEBUG then print('Moving down ' .. steps .. ' steps') end
   return true
 end
 
@@ -488,33 +494,21 @@ function doActions(actionsStr, safeMode)
       end
     end
     if actions[i] == 'f' or actions[i] == 'forward' then
-      for j = 1,reps do
-        success, errMsg = forward()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = forward(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'b' or actions[i] == 'back' then
-      for j = 1,reps do
-        success, errMsg = back()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = back(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'l' or actions[i] == 'left' then
-      for j = 1,reps do
-        turnLeft()
-      end
+      turnLeft(reps)
     elseif actions[i] == 'r' or actions[i] == 'right' then
-      for j = 1,reps do
-        turnRight()
-      end
+      turnRight(reps)
     elseif actions[i] == 'up' then
-      for j = 1,reps do
-        success, errMsg = up()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = up(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'dn' or actions[i] == 'down' then
-      for j = 1,reps do
-        success, errMsg = down()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = down(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'fn' or actions[i] == 'facenorth' then
       success = faceNorth()
       if safeMode and not success then return success end -- TODO figure out if there are error messages for turning, I'm assuming there are not.
@@ -585,50 +579,38 @@ function doActions(actionsStr, safeMode)
       success, errMsg = turtle.select(reps)
       if safeMode and not success then return success, errMsg end
     elseif actions[i] == 's' or actions[i] == 'suck' then
-      for j = 1,reps do
-          success, errMsg = turtle.suck()
-          if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.suck(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'su' or actions[i] == 'suckup' then
-      for j = 1,reps do
-          success, errMsg = turtle.suckUp()
-          if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.suckUp(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'sd' or actions[i] == 'suckdown' then
-      for j = 1,reps do
-          success, errMsg = turtle.suckDown()
-          if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.suckDown(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'p' or actions[i] == 'place' then
       for j = 1,reps do
-          success, errMsg = turtle.place()
-          if safeMode and not success then return success, errMsg end
+        success, errMsg = turtle.place()
+        if safeMode and not success then return success, errMsg end
       end
     elseif actions[i] == 'pu' or actions[i] == 'placeup' then
       for j = 1,reps do
-          success, errMsg = turtle.placeUp()
-          if safeMode and not success then return success, errMsg end
+        success, errMsg = turtle.placeUp()
+        if safeMode and not success then return success, errMsg end
       end
     elseif actions[i] == 'pd' or actions[i] == 'placedown' then
       for j = 1,reps do
-          success, errMsg = turtle.placeDown()
-          if safeMode and not success then return success, errMsg end
+        success, errMsg = turtle.placeDown()
+        if safeMode and not success then return success, errMsg end
       end
     elseif actions[i] == 'dr' or actions[i] == 'drop' then
-      for j = 1,reps do
-          success, errMsg = turtle.drop()
-          if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.drop(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'dru' or actions[i] == 'dropup' then
-      for j = 1,reps do
-          success, errMsg = turtle.dropUp()
-          if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.dropUp(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'drd' or actions[i] == 'dropdown' then
-      for j = 1,reps do
-          success, errMsg = turtle.dropDown()
-          if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.dropDown(reps)
+      if safeMode and not success then return success, errMsg end
     end
   end
 end
@@ -660,33 +642,21 @@ function doReverseMovement(actionsStr, safeMode)
       end
     end
     if actions[i] == 'f' or actions[i] == 'forward' then
-      for j = 1,reps do
-        success, errMsg = turtle.back()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = back(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'b' or actions[i] == 'back' then
-      for j = 1,reps do
-        success, errMsg = turtle.forward()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = forward(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'l' or actions[i] == 'left' then
-      for j = 1,reps do
-        turtle.turnRight()
-      end
+      turnRight(reps)
     elseif actions[i] == 'r' or actions[i] == 'right' then
-      for j = 1,reps do
-        turtle.turnLeft()
-      end
+      turnLeft(reps)
     elseif actions[i] == 'up' then
-      for j = 1,reps do
-        success, errMsg = turtle.down()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.down(reps)
+      if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'dn' or actions[i] == 'down' then
-      for j = 1,reps do
-        success, errMsg = turtle.up()
-        if safeMode and not success then return success, errMsg end
-      end
+      success, errMsg = turtle.up(reps)
+      if safeMode and not success then return success, errMsg end
     end
   end
 end
@@ -711,7 +681,7 @@ function doOneAction(actionsStr)
   success, errMsg = doActions(action .. ' ' .. tostring(reps)) -- do the first action
   if success == false then return success, errMsg end
 
-  if DEBUG then print('returning from doOneAction: ' .. table.concat(actions, ' ')) end
+  if DEBUG then print('doOneAction returns: ' .. table.concat(actions, ' ')) end
   return table.concat(actions, ' ')
 end
 
@@ -991,8 +961,11 @@ end
 
 
 function suckAt(direction, slots, amount)
+  if DEBUG then print('Call: suckAt(' .. direction .. ', ' .. slots .. ', ' .. amount .. ')') end
   local success, errMsg
   local origDirection = getDirection()
+
+  if type(slots) == 'number' then slots = {slots} end
 
   if amount == nil then amount = MAX_STACK_SIZE end
 
@@ -1000,9 +973,9 @@ function suckAt(direction, slots, amount)
   if success == false then return false, errMsg end
 
   if type(direction) == 'string' then
-    while true do
+    while direction ~= '' do
       -- check if this is a suck command
-      firstAction = split(actionsStr)[1]
+      firstAction = split(direction)[1]
       local isSuckCmd = firstAction == 's' or firstAction == 'suck' or firstAction == 'sd' or firstAction == 'suckdown' or firstAction == 'suckup' or firstAction == 'su'
 
       if isSuckCmd then
@@ -1010,12 +983,15 @@ function suckAt(direction, slots, amount)
         for i=1,#slots do
           if DEBUG then print('Sucking to slot #' .. tostring(slots[i])) end
           turtle.select(slots[i])
-          success, errMsg = doOneAction(directionTab[1])
+          success, errMsg = doOneAction(firstAction .. ' ' .. amount)
           if success == false then return false, errMsg end
+          direction = success -- assign the remainder of the action string to direction
         end
       else
-        success, errMsg = doOneAction(firstAction .. ' ' .. amount)
+        -- this is not a suck command, so just do it
+        success, errMsg = doOneAction(direction)
         if success == false then return false, errMsg end
+        direction = success -- assign the remainder of the action string to direction
       end
     end
 
@@ -1056,8 +1032,11 @@ end
 
 
 function dropAt(direction, slots, amount)
+  if DEBUG then print('Call: dropAt(' .. direction .. ', ' .. slots .. ', ' .. amount .. ')') end
   local success, errMsg
   local origDirection = getDirection()
+
+  if type(slots) == 'number' then slots = {slots} end
 
   if amount == nil then amount = MAX_STACK_SIZE end
 
@@ -1065,9 +1044,9 @@ function dropAt(direction, slots, amount)
   if success == false then return false, errMsg end
 
   if type(direction) == 'string' then
-    while true do
+    while direction ~= '' do
       -- check if this is a drop command
-      firstAction = split(actionsStr)[1]
+      firstAction = split(direction)[1]
       local isDropCmd = firstAction == 'dr' or firstAction == 'drop' or firstAction == 'drd' or firstAction == 'dropdown' or firstAction == 'dropup' or firstAction == 'dru'
 
       if isDropCmd then
@@ -1075,12 +1054,15 @@ function dropAt(direction, slots, amount)
         for i=1,#slots do
           if DEBUG then print('Dropping slot #' .. tostring(slots[i])) end
           turtle.select(slots[i])
-          success, errMsg = doOneAction(directionTab[1])
+          success, errMsg = doOneAction(firstAction .. ' ' .. amount)
           if success == false then return false, errMsg end
+          direction = success -- assign the remainder of the action string to direction
         end
       else
-        success, errMsg = doOneAction(firstAction .. ' ' .. amount)
+        -- this is not a drop command, so just do it
+        success, errMsg = doOneAction(direction)
         if success == false then return false, errMsg end
+        direction = success -- assign the remainder of the action string to direction
       end
     end
 
@@ -1122,11 +1104,12 @@ end
 
 function pickOut(itemName, amount, suckDirection, dropDirection, slot, timeout)
   -- suck/drop directions can be: {x,y,z,nsew} or an action string with suck/drop commands
+  -- TODO implement timeout
   while true do
     if selectEmptySlot() == false then return false, 'No empty slots' end
     if DEBUG then print('selected slot #' .. tostring(turtle.getSelectedSlot())) end
 
-    success, errMsg = suckFrom(suckDirection, MAX_STACK_SIZE, false)
+    success, errMsg = suckAt(suckDirection, MAX_STACK_SIZE, false)
 
     if success == false then return false, errMsg end -- nothing left to get
 
@@ -1490,16 +1473,56 @@ function table.print(tab)
 end
 
 
+function nineSpaceToSixteenSpace(slot)
+  if slot <= 3 then return slot end
+  if slot <= 6 then return slot + 1 end
+  if slot <= 9 then return slot + 2 end
+  return false, 'Not a valid nine-space slot'
+end
 
-function manufacture(recipe, sourceDirection, resultDirection, discardDirection)
+
+function sixteenSpaceToNineSpace(slot)
+  if slot <= 3 then return slot end
+  if slot >= 5 and slot <= 7 then return slot - 1 end
+  if slot >= 9 and slot <= 11 then return slot - 2 end
+  return false, 'Cannot convert to valid nine-space slot'
+end
+
+
+
+function manufacture(recipe, amount, sourceDirection, resultDirection, discardDirection)
+  local success, errMsg
+  if amount == nil then amount = MAX_STACK_SIZE end
+
+  -- recipe is a 9-item array for a 3x3 recipe, it must be converted to a full 4x4 sized recipe
+  fullSizeRecipe = {recipe[1], recipe[2], recipe[3], '', recipe[4], recipe[5], recipe[6], '', recipe[7], recipe[8], recipe[9], '', '', '', '', ''}
+
   -- call arrange to see if the turtle already carries parts for the recipe (discarding any non-recipe items)
-
-  -- check if the turtle can craft the item
-
-  -- if the turtle can't craft the item, then pick out craft items from the source (discarding them if they are non-recipe items)
+  success, errMsg = arrange(fullSizeRecipe, discardDirection)
+  if success == false then
+    -- if the turtle can't craft the item, then pick out craft items from the source (discarding them if they are non-recipe items)
+    for i=1,9 do
+      -- (because we ran arrange(), we can assume that if a slot isn't blank then it has the correct recipe item)
+      if turtle.getItemDetail(nineSpaceToSixteenSpace(i)) == nil then
+        success, errMsg = pickOut(recipe[i], amount, sourceDirection, discardDirection, nineSpaceToSixteenSpace(i))
+        if success == false then return false, errMsg end -- TODO test this
+      end
+    end
+  end
 
   -- (if there isn't enough recipe items, then just return false)
 
   -- put the resulting crafted item in the result Direction
 
+end
+
+
+alloyrep = {'alloy','alloy','alloy','','alloy','alloy','alloy','','alloy','alloy','alloy','','','','',''}
+
+
+
+-- startup code to run:
+local success, x, y, z = useGPS()
+if success then
+  print('Acquired GPS position: ' .. x .. ', ' .. y .. ', ' .. z)
 end
