@@ -3,7 +3,20 @@
 -- TODO switch from return values to exceptions for errors
 -- TODO call hasFuelFor for various events
 
+-- TODO come up with a better name than "direction"
+
 local DEBUG = true
+
+--[[
+Directions:
+
+    -z     UP +y
+    N
+-x W E +x
+    S
+    +z     DOWN -y
+
+]]
 
 
 function split(str)
@@ -15,7 +28,7 @@ function split(str)
   return actions
 end
 
-local VALID_ACTIONS = split('f forward b back l left r right up dn down fn fs fe fw facenorth facesouth faceeast facewest no north so south ea east we west d dig du digup dd digdown i inspect iu inspectup id inspectdown sel select s suck su suckup sd suckdown p place pu placeup pd placedown dr drop dru dropup drd dropdown')
+local VALID_ACTIONS = {'f', 'forward', 'b', 'back', 'l', 'left', 'r', 'right', 'up', 'dn', 'down', 'fn', 'fs', 'fe', 'fw', 'facenorth', 'facesouth', 'faceeast', 'facewest', 'no', 'north', 'so', 'south', 'ea', 'east', 'we', 'west', 'd', 'dig', 'du', 'digup', 'dd', 'digdown', 'i', 'inspect', 'iu', 'inspectup', 'id', 'inspectdown', 'sel', 'select', 's', 'suck', 'su', 'suckup', 'sd', 'suckdown', 'p', 'place', 'pu', 'placeup', 'pd', 'placedown', 'dr', 'drop', 'dru', 'dropup', 'drd', 'dropdown', 'c', 'craft'}
 
 local direction = 'north'
 --local x, y, z = gps.locate()
@@ -147,12 +160,12 @@ end
 
 
 function up(steps)
-  local success, i
+  local success, errMsg, i
   if steps == nil then steps = 1 end
 
   for i=1,steps do
-    success = turtle.up()
-    if not success then return false end
+    success, errMsg = turtle.up()
+    if not success then return false, errMsg end
     if recordingNow then recordMove('up') end
     y = y + 1 -- track position
   end
@@ -162,12 +175,12 @@ end
 
 
 function down(steps)
-  local success, i
+  local success, errMsg, i
   if steps == nil then steps = 1 end
 
   for i=1,steps do
-    success = turtle.down()
-    if not success then return false end
+    success, errMsg = turtle.down()
+    if not success then return false, errMsg end
     if recordingNow then recordMove('dn') end
     y = y - 1 -- track position
   end
@@ -178,13 +191,13 @@ end
 
 function face(d)
   d = string.lower(d)
-  if d == 'north' or d == 'n' then
+  if d == 'north' or d == 'no' then
     return faceNorth()
-  elseif d == 'south' or d == 's' then
+  elseif d == 'south' or d == 'so' then
     return faceSouth()
-  elseif d == 'west' or d == 'w' then
+  elseif d == 'west' or d == 'we' then
     return faceWest()
-  elseif d == 'east' or d == 'e' then
+  elseif d == 'east' or d == 'ea' then
     return faceEast()
   end
 
@@ -395,26 +408,46 @@ function line(x0, y0, z0, x1, y1, z1)
   end
 
   table.insert(points, {x=xptr, y=yptr, z=zptr})
+
+  -- TODO seems to be a bug where if you move by 1 on x&y or by 1 on y&z then the last point isn't on the final destination. This is a cheap fix.
+  if xptr ~= x1 or yptr ~= y1 or zptr ~= z1 then
+    table.insert(points, {x=x1, y=y1, z=z1})
+  end
+
   return points
 end
 
 
-function goto(destx, desty, destz, faceOriginalDirection)
+function goto(destx, desty, destz, facing)
   -- returns false if at some point the turtle can't move along the path
   local startx, starty, startz = getx(), gety(), getz()
   local originalDirection = direction
 
-  if faceOriginalDirection == nil then faceOriginalDirection = true end
+  if type(destx) == 'table' then
+    desty = destx[2]
+    destz = destx[3]
+    facing = destx[4]
+    destx = destx[1]
+  end
+
+  if facing == nil then facing = getDirection() end
 
   if destx == nil then destx = getx() end
   if desty == nil then desty = gety() end
   if destz == nil then destz = getz() end
 
   if startx == destx and starty == desty and startz == destz then
+    if facing ~= false then face(facing) end
     return true -- edge case; we are already at the destination
   end
 
   linePoints = line(startx, starty, startz, destx, desty, destz)
+  if DEBUG then
+    print('linePoints=')
+    for i=1,#linePoints do
+      print(' ' .. linePoints[i]['x'] .. ' ' .. linePoints[i]['y'] .. ' ' .. linePoints[i]['z'])
+    end
+  end
 
   -- go through all the points and make them relative to the one before it
   for i=#linePoints,2,-1 do
@@ -424,8 +457,9 @@ function goto(destx, desty, destz, faceOriginalDirection)
   end
   table.remove(linePoints, 1) -- get rid of the first point; we won't need it
 
+
   for i=1,#linePoints do
-    --hare.print(linePoints[i]['x'], ' ', linePoints[i]['y'], ' ', linePoints[i]['z'])
+    print('next step: ' .. linePoints[i]['x'] .. ' ' .. linePoints[i]['y'] .. ' ' .. linePoints[i]['z'])
     if linePoints[i]['x'] == 1 then
       faceEast()
       if DEBUG then print('goto: moving east') end
@@ -457,7 +491,7 @@ function goto(destx, desty, destz, faceOriginalDirection)
     if not success then return false, errMsg end
   end
 
-  if faceOriginalDirection then face(originalDirection) end
+  if facing ~= false then face(facing) end
 end
 
 
@@ -610,6 +644,9 @@ function doActions(actionsStr, safeMode)
       if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'drd' or actions[i] == 'dropdown' then
       success, errMsg = turtle.dropDown(reps)
+      if safeMode and not success then return success, errMsg end
+    elseif actions[i] == 'c' or actions[i] == 'craft' then
+      success, errMsg = turtle.craft(reps)
       if safeMode and not success then return success, errMsg end
     end
   end
@@ -785,6 +822,8 @@ function arrange(recipe, discardDirection)
   local origz = getz()
   local origFace = getDirection()
 
+  local i, j
+
   -- set item names to lowercase for easier matching
   for i=1,16 do
     recipe[i] = string.lower(recipe[i])
@@ -802,9 +841,10 @@ function arrange(recipe, discardDirection)
   for i=1,16 do
     -- loop through all the inventory slots, note any slots with non-recipe items
     local notInRecipe = true
+    if DEBUG then print('#recipe=' .. #recipe) end
     for j=1,#recipe do
       itemData = turtle.getItemDetail(j)
-      if string.find(string.lower(itemData['name']), recipe[i]) then
+      if (itemData ~= nil and string.find(string.lower(itemData['name']), recipe[i])) or (itemData ~= nil and (recipe[i] == '' or recipe[i] == nil)) then
         notInRecipe = false
         break
       end
@@ -949,8 +989,9 @@ function isValidDirectionValue(direction, requiredCmdType)
     end
 
     if direction[4] ~= 'no' and direction[4] ~= 'north' and direction[4] ~= 'so' and direction[4] ~= 'south' and
-      direction[4] ~= 'ea' and direction[4] ~= 'east' and direction[4] ~= 'we' and direction[4] ~= 'west' then
-      return false, '"' .. direction[4] .. '" is not a valid N-S-E-W compass direction'
+      direction[4] ~= 'ea' and direction[4] ~= 'east' and direction[4] ~= 'we' and direction[4] ~= 'west' and
+      direction[4] ~= 'dn' and direction[4] ~= 'down' and direction[4] ~= 'up' then
+      return false, '"' .. direction[4] .. '" is not a valid N-S-E-W-UP-DN direction'
     end
   else
     return false, '"' .. type(direction) .. '" is an invalid type for the `direction` parameter'
@@ -961,19 +1002,25 @@ end
 
 
 function suckAt(direction, slots, amount)
-  if DEBUG then print('Call: suckAt(' .. direction .. ', ' .. table.tostring(slots) .. ', ' .. amount .. ')') end
   local success, errMsg
+  local origx = getx()
+  local origy = gety()
+  local origz = getz()
   local origDirection = getDirection()
 
+  if slots == nil then slots = {turtle.getSelectedSlot()} end
+  if slots == 'craft' then slots = {1, 2, 3, 5, 6, 7, 9, 10, 11} end
   if type(slots) == 'number' then slots = {slots} end
 
   if amount == nil then amount = MAX_STACK_SIZE end
+
+  --if DEBUG then print('Call: suckAt(' .. table.tostring(direction) .. ', ' .. table.tostring(slots) .. ', ' .. amount .. ')') end
 
   success, errMsg = isValidDirectionValue(direction, 'suck')
   if success == false then return false, errMsg end
 
   if type(direction) == 'string' then
-    originalDirection = direction
+    originalDirectionArg = direction
     while direction ~= '' do
       -- check if this is a suck command
       firstAction = split(direction)[1]
@@ -997,20 +1044,16 @@ function suckAt(direction, slots, amount)
     end
 
     -- return to original place
-    doReverseMovement(originalDirection)
+    doReverseMovement(originalDirectionArg)
 
   elseif type(direction) == 'table' then
-    local origx = getx()
-    local origy = gety()
-    local origz = getz()
-
     -- direction is an xyz coordinate with direction
     if goto(direction[1], direction[2], direction[3], false) == false then return false, 'Movement obstructed' end
     face(direction[4])
 
     -- suck items at the suck destination
     for i=1,#slots do
-      if DEBUG then print('Suckping slot #' .. tostring(slots[i])) end
+      if DEBUG then print('Sucking slot #' .. tostring(slots[i])) end
       turtle.select(slots[i])
       if direction[4] == 'up' then
         success, errMsg = turtle.suckUp(amount)
@@ -1022,30 +1065,33 @@ function suckAt(direction, slots, amount)
     end
 
     if goto(origx, origy, origz) == false then return false, 'Movement obstructed' end
-  end
-
-  if DEBUG then print('sucked items at suck site') end
-
-  if faceOriginalDirection then
     face(origDirection)
   end
+
+  if DEBUG then print('done sucking items at suck site') end
 end
 
 
 function dropAt(direction, slots, amount)
-  if DEBUG then print('Call: dropAt(' .. direction .. ', ' .. table.tostring(slots) .. ', ' .. amount .. ')') end
   local success, errMsg
+  local origx = getx()
+  local origy = gety()
+  local origz = getz()
   local origDirection = getDirection()
 
+  if slots == nil then slots = {turtle.getSelectedSlot()} end
+  if slots == 'craft' then slots = {1, 2, 3, 5, 6, 7, 9, 10, 11} end
   if type(slots) == 'number' then slots = {slots} end
 
   if amount == nil then amount = MAX_STACK_SIZE end
+
+  if DEBUG then print('Call: dropAt(' .. table.tostring(direction) .. ', ' .. table.tostring(slots) .. ', ' .. amount .. ')') end
 
   success, errMsg = isValidDirectionValue(direction, 'drop')
   if success == false then return false, errMsg end
 
   if type(direction) == 'string' then
-    originalDirection = direction
+    originalDirectionArg = direction
     while direction ~= '' do
       -- check if this is a drop command
       firstAction = split(direction)[1]
@@ -1069,13 +1115,9 @@ function dropAt(direction, slots, amount)
     end
 
     -- return to original place
-    doReverseMovement(originalDirection)
+    doReverseMovement(originalDirectionArg)
 
   elseif type(direction) == 'table' then
-    local origx = getx()
-    local origy = gety()
-    local origz = getz()
-
     -- direction is an xyz coordinate with direction
     if goto(direction[1], direction[2], direction[3], false) == false then return false, 'Movement obstructed' end
     face(direction[4])
@@ -1094,13 +1136,10 @@ function dropAt(direction, slots, amount)
     end
 
     if goto(origx, origy, origz) == false then return false, 'Movement obstructed' end
-  end
-
-  if DEBUG then print('dropped items at direction') end
-
-  if faceOriginalDirection then
     face(origDirection)
   end
+
+  if DEBUG then print('done dropping items at direction') end
 end
 
 
@@ -1350,24 +1389,30 @@ function table.contains(table, element)
 end
 
 
-function setDirection(d)
-  if not table.contains({'north', 'n', 'south', 's', 'east', 'e', 'west', 'w'}, d) then
+function setDirection(d) -- TODO, shoudl we replace no/so/ea/we with n/s/e/w and change 's' to 'su' for the commands?
+  if not table.contains({'north', 'no', 'south', 'so', 'east', 'ea', 'west', 'we'}, d) then
     return false, '"' .. d .. '" is not a valid direction'
   end
-  direction = d
+  if d == 'no' or d == 'north' then direction = 'north' end
+  if d == 'so' or d == 'south' then direction = 'south' end
+  if d == 'we' or d == 'west' then direction = 'west' end
+  if d == 'ea' or d == 'east' then direction = 'east' end
   return true
 end
+
 
 function getDirection()
   return direction
 end
 
+
 function setPos(xpos, ypos, zpos)
-  if tonumber(xpos) == nil or tonumber(ypos) == nil or tonumber(zpos) == nil then
-    return false, 'Non-numbers passed to setPos()'
-  end
+  if xpos ~= nil then x = xpos end
+  if ypos ~= nil then y = ypos end
+  if zpos ~= nil then z = zpos end
   return true
 end
+
 
 function getPos()
   return {x=x, y=y, z=z}
@@ -1415,7 +1460,7 @@ end
 
 function useGPS()
   local gpsx, gpsy, gpsz = gps.locate()
-  if x == nil then
+  if gpsx == nil then
     return false, 'GPS not available'
   else
     x, y, z = gpsx, gpsy, gpsz
@@ -1467,7 +1512,9 @@ function getRecording()
 end
 
 
-function table.tostring(tab)
+function table.tostring(tab) -- TODO this doesn't seem to work very well. test with various data types passed for tab
+  if type(tab) ~= 'table' then return tostring(tab) end
+
   result = '{'
   for k, v in pairs(tab) do
     result = result .. tostring(k) .. ': ' .. tostring(v) .. ', '
