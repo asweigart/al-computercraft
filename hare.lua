@@ -1,3 +1,5 @@
+local DEBUG = false
+print('hare ver 4')
 -- A utility module for ComputerCraft's turtles that adds several functions
 
 -- TODO switch from return values to exceptions for errors
@@ -5,7 +7,6 @@
 
 -- TODO come up with a better name than "direction"
 
-local DEBUG = true
 
 --[[
 Directions:
@@ -73,6 +74,13 @@ function forward(steps)
     end
   end
   if DEBUG then print('Moved forward ' .. steps .. ' steps') end
+
+  gpsx, gpsy, gpsz = gps.locate()
+  if DEBUG and gpsx ~= nil and (gpsx ~= x or gpsy ~= y or gpsz ~= z) then
+    print('Pos out of sync with GPS!')
+    print('!!! Pos: ' .. x .. ' ' .. y .. ' ' .. z)
+    print('!!! GPS: ' .. gpsx .. ' ' .. gpsy .. ' ' .. gpsz)
+  end
   return true
 end
 
@@ -104,11 +112,18 @@ function back(steps)
     end
   end
   if DEBUG then print('Moved back ' .. steps .. ' steps') end
+  gpsx, gpsy, gpsz = gps.locate()
+  if DEBUG and gpsx ~= nil and (gpsx ~= x or gpsy ~= y or gpsz ~= z) then
+    print('Pos out of sync with GPS!')
+    print('!!! Pos: ' .. x .. ' ' .. y .. ' ' .. z)
+    print('!!! GPS: ' .. gpsx .. ' ' .. gpsy .. ' ' .. gpsz)
+  end
   return true
 end
 
 
 function turnLeft(turns)
+  local success, i
   if turns == nil then turns = 1 end
 
   for i=1,turns do
@@ -170,6 +185,12 @@ function up(steps)
     y = y + 1 -- track position
   end
   if DEBUG then print('Moved up ' .. steps .. ' steps') end
+  gpsx, gpsy, gpsz = gps.locate()
+  if DEBUG and gpsx ~= nil and (gpsx ~= x or gpsy ~= y or gpsz ~= z) then
+    print('Pos out of sync with GPS!')
+    print('!!! Pos: ' .. x .. ' ' .. y .. ' ' .. z)
+    print('!!! GPS: ' .. gpsx .. ' ' .. gpsy .. ' ' .. gpsz)
+  end
   return true
 end
 
@@ -185,6 +206,12 @@ function down(steps)
     y = y - 1 -- track position
   end
   if DEBUG then print('Moved down ' .. steps .. ' steps') end
+  gpsx, gpsy, gpsz = gps.locate()
+  if DEBUG and gpsx ~= nil and (gpsx ~= x or gpsy ~= y or gpsz ~= z) then
+    print('Pos out of sync with GPS!')
+    print('!!! Pos: ' .. x .. ' ' .. y .. ' ' .. z)
+    print('!!! GPS: ' .. gpsx .. ' ' .. gpsy .. ' ' .. gpsz)
+  end
   return true
 end
 
@@ -354,7 +381,7 @@ function line(x0, y0, z0, x1, y1, z1)
     sz = 1
   end
 
-  if dx > dy and dx > dz then
+  if dx >= dy and dx >= dz then
     erry = dx / 2
     errz = dx / 2
     while xptr ~= x1 do
@@ -371,7 +398,7 @@ function line(x0, y0, z0, x1, y1, z1)
       end
       xptr = xptr + sx
     end
-  elseif dy > dx and dy > dz then
+  elseif dy >= dx and dy >= dz then
     errx = dy / 2
     errz = dy / 2
     while yptr ~= y1 do
@@ -441,6 +468,8 @@ function goto(destx, desty, destz, facing)
     return true -- edge case; we are already at the destination
   end
 
+  --[[
+  -- THE LINE FUNCTION IS FLAWED AND OFTEN FAILS. I THINK IT MAY HAVE BEEN THE CHANGES FOR 3D
   linePoints = line(startx, starty, startz, destx, desty, destz)
   if DEBUG then
     print('linePoints=')
@@ -456,10 +485,46 @@ function goto(destx, desty, destz, facing)
     linePoints[i]['z'] = linePoints[i]['z'] - linePoints[i-1]['z']
   end
   table.remove(linePoints, 1) -- get rid of the first point; we won't need it
+  ]]
+
+  -- came up with this random alg to mostly move to the destination in a straight line
+  linePoints = {}
+  tempx, tempy, tempz = math.abs(destx-startx), math.abs(desty-starty), math.abs(destz-startz)
+  while tempx ~= 0 or tempy ~= 0 or tempz ~= 0 do
+    r = math.random(1, tempx+tempy+tempz)
+    if r <= tempx then
+      if destx > startx then
+        table.insert(linePoints, {x=1, y=0, z=0})
+      elseif destx < startx then
+        table.insert(linePoints, {x=-1, y=0, z=0})
+      else
+        assert(false, 'tempx should have always been 0, and reaching this should be impossible')
+      end
+      tempx = tempx - 1
+    elseif r <= tempx+tempy then
+      if desty > starty then
+        table.insert(linePoints, {x=0, y=1, z=0})
+      elseif desty < starty then
+        table.insert(linePoints, {x=0, y=-1, z=0})
+      else
+        assert(false, 'tempy should have always been 0, and reaching this should be impossible')
+      end
+      tempy = tempy - 1
+    else
+      if destz > startz then
+        table.insert(linePoints, {x=0, y=0, z=1})
+      elseif destz < startz then
+        table.insert(linePoints, {x=0, y=0, z=-1})
+      else
+        assert(false, 'tempz should have always been 0, and reaching this should be impossible')
+      end
+      tempz = tempz - 1
+    end
+  end
 
 
   for i=1,#linePoints do
-    print('next step: ' .. linePoints[i]['x'] .. ' ' .. linePoints[i]['y'] .. ' ' .. linePoints[i]['z'])
+    if DEBUG then print('next step: ' .. linePoints[i]['x'] .. ' ' .. linePoints[i]['y'] .. ' ' .. linePoints[i]['z']) end
     if linePoints[i]['x'] == 1 then
       faceEast()
       if DEBUG then print('goto: moving east') end
@@ -492,8 +557,8 @@ function goto(destx, desty, destz, facing)
   end
 
   if facing ~= false then face(facing) end
+  return true
 end
-
 
 
 function doActions(actionsStr, safeMode)
@@ -501,6 +566,7 @@ function doActions(actionsStr, safeMode)
   Complete list of commands:
   f - move forward
   b - move backward
+  TODO
 
   ]]
   actionsStr = string.lower(actionsStr)
@@ -508,12 +574,11 @@ function doActions(actionsStr, safeMode)
 
   if safeMode == nil then safeMode = false end
 
-  local i, j, k, v, success, errMsg
+  local i, j, k, v, success, errMsg, reps
 
-  if safeMode then -- check that there are no invalid commands
-    success, errMsg = isValidActionString(actionsStr)
-    if not success then return false, errMsg end
-  end
+  -- check that there are no invalid commands
+  success, errMsg = isValidActionString(actionsStr)
+  if not success then return false, errMsg end
 
   for i = 1,#actions do
     cmd = actions[i] -- get the command
@@ -536,6 +601,8 @@ function doActions(actionsStr, safeMode)
     elseif actions[i] == 'l' or actions[i] == 'left' then
       turnLeft(reps)
     elseif actions[i] == 'r' or actions[i] == 'right' then
+      print('type(turnRight) = ' .. type(turnRight))
+      print('type(reps) = ' .. type(reps))
       turnRight(reps)
     elseif actions[i] == 'up' then
       success, errMsg = up(reps)
@@ -650,6 +717,7 @@ function doActions(actionsStr, safeMode)
       if safeMode and not success then return success, errMsg end
     end
   end
+  return true
 end
 
 
@@ -689,10 +757,10 @@ function doReverseMovement(actionsStr, safeMode)
     elseif actions[i] == 'r' or actions[i] == 'right' then
       turnLeft(reps)
     elseif actions[i] == 'up' then
-      success, errMsg = turtle.down(reps)
+      success, errMsg = down(reps)
       if safeMode and not success then return success, errMsg end
     elseif actions[i] == 'dn' or actions[i] == 'down' then
-      success, errMsg = turtle.up(reps)
+      success, errMsg = up(reps)
       if safeMode and not success then return success, errMsg end
     end
   end
@@ -752,7 +820,7 @@ end
 function getAreaCoverActions(forward, right, goHome)
   -- returns a string that can be passed to doActions() and doOneAction()
   -- these actions are for moving the turtle to cover an area
-  local r, actions, r_str, l_str
+  local r, actions, r_str, l_str, turnRight
   if forward <= 0 or right == 0 then return '' end -- edge case: no movement
 
   if goHome == nil then goHome = false end
@@ -924,7 +992,7 @@ function isValidActionString(actionStr)
       expectCmd = false -- next action can be a command OR reps number, it doesn't HAVE to be a command
     end
 
-    if tonumber(actions[i]) == nil then
+    if tonumber(actions[i]) ~= nil then
       -- the command was a reps number, so the next action MUST be a command
       expectCmd = true
     end
@@ -1458,6 +1526,61 @@ function setz(zpos)
 end
 
 
+function discoverDirection()
+  -- requires gps to figure out what direction they're facing
+  success, errMsg = useGPS()
+  if success == false then return false, errMsg end
+
+  origx, origy, origz = gps.locate()
+
+  if forward() == true then
+    newx, newy, newz = gps.locate()
+    if newx == origx + 1 then setDirection('east') end
+    if newx == origx - 1 then setDirection('west') end
+    if newz == origz + 1 then setDirection('south') end
+    if newz == origz - 1 then setDirection('north') end
+    back()
+    useGPS()
+    return true
+  elseif back() == true then
+    newx, newy, newz = gps.locate()
+    if newx == origx + 1 then setDirection('west') end
+    if newx == origx - 1 then setDirection('east') end
+    if newz == origz + 1 then setDirection('north') end
+    if newz == origz - 1 then setDirection('south') end
+    forward()
+    useGPS()
+    return true
+  else
+    -- try turning to the left to see if you can move in that direction
+    turnLeft()
+    if forward() == true then
+      newx, newy, newz = gps.locate()
+      if newx == origx + 1 then setDirection('east') end
+      if newx == origx - 1 then setDirection('west') end
+      if newz == origz + 1 then setDirection('south') end
+      if newz == origz - 1 then setDirection('north') end
+      back()
+      turnRight()
+      useGPS()
+      return true
+    elseif back() == true then
+      newx, newy, newz = gps.locate()
+      if newx == origx + 1 then setDirection('west') end
+      if newx == origx - 1 then setDirection('east') end
+      if newz == origz + 1 then setDirection('north') end
+      if newz == origz - 1 then setDirection('south') end
+      forward()
+      turnRight()
+      useGPS()
+      return true
+    end
+    turnRight()
+    return false -- turtle is completely boxed in (or out of fuel) and can't determine compass direction from gps
+  end
+end
+
+
 function useGPS()
   local gpsx, gpsy, gpsz = gps.locate()
   if gpsx == nil then
@@ -1567,8 +1690,32 @@ function manufacture(recipe, amount, sourceDirection, resultDirection, discardDi
 end
 
 
-alloyrep = {'alloy','alloy','alloy','','alloy','alloy','alloy','','alloy','alloy','alloy','','','','',''}
+function testGoto()
+  origx, origy, origz = gps.locate()
+  if origx == nil then return false, 'Test requires gps' end
+
+  for changex = -2,2 do
+    for changey = -2,2 do
+      for changez = -2,2 do
+        if goto(origx+changex, origy+changey, origz+changez) == false then return false, 'Could not finish test (1)' end
+        actx, acty, actz = gps.locate()
+        if actx ~= origx+changex or acty ~= origy+changey or actz ~= origz+changez then
+          print('out of sync for test ' .. changex .. ' ' .. changey .. ' ' .. changez)
+          print('Expected: ' .. origx+changex .. ' ' .. origy+changey .. ' ' .. origz+changez)
+          print('Actual: ' .. actx .. ' ' .. acty .. ' ' .. actz)
+        end
+
+        -- go back to original place
+        if goto(origx, origy, origz) == false then return false, 'Could not finish test (2)' end
+        actx, acty, actz = gps.locate()
+        if actx ~= origx or acty ~= origy or actz ~= origz then return false, 'Could not go back to original spot' end
+      end
+    end
+  end
+  return true -- "true" here means that the test finished
+end
+
 
 
 -- startup code to run:
-useGPS()
+discoverDirection()
