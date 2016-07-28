@@ -455,6 +455,7 @@ elseif tArgs[1] == 'make' then
 elseif tArgs[1] == '1' then
   dumpAll()
   while true do
+    --[[
     success, errMsg = craftPlank(64)
     if not success then print(errMsg); dumpAll() end
     success, errMsg = craftPlank(64)
@@ -464,7 +465,7 @@ elseif tArgs[1] == '1' then
     success, errMsg = craftPlank(64)
     if not success then print(errMsg); dumpAll() end
     success, errMsg = craftPlank(64)
-    if not success then print(errMsg); dumpAll() end
+    if not success then print(errMsg); dumpAll() end]]
 
     success, errMsg = craftMirror(64)
     if not success then print(errMsg); dumpAll() end
@@ -489,25 +490,67 @@ elseif tArgs[1] == '3' then
   dumpAll()
   while true do
 
-    success, errMsg = craftRedstoneBlock(8)
+    success, errMsg = craftRedstoneBlock(64)
     if not success then print(errMsg); dumpAll() end
 
     success, errMsg = craftTinGear(64)
     if not success then print(errMsg); dumpAll() end
 
-    success, errMsg = craftLeadstoneEnergyFrame(8)
+    success, errMsg = craftLeadstoneEnergyFrame(64)
     if not success then print(errMsg); dumpAll() end
 
-    success, errMsg = craftMachineFrameBasic(8)
+    success, errMsg = craftMachineFrameBasic(64)
     if not success then print(errMsg); dumpAll() end
 
-    success, errMsg = craftSolarPanelIII(8)
+    success, errMsg = craftSolarPanelIII(64)
     if not success then print(errMsg); dumpAll() end
   end
 
 elseif tArgs[1] == '4' then
+  dumpAll()
+  while true do
+    success, errMsg = craftElectrumGear(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftHardenedEnergyCellFrame(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftMachineFrameHardened(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftSolarPanelIV(64)
+    if not success then print(errMsg); dumpAll() end
+  end
 elseif tArgs[1] == '5' then
+  dumpAll()
+  while true do
+    success, errMsg = craftSignalumGear(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftRedstoneEnergyCellFrame(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftMachineFrameReinforced(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftSolarPanelV(64)
+    if not success then print(errMsg); dumpAll() end
+  end
 elseif tArgs[1] == '6' then
+  dumpAll()
+  while true do
+    success, errMsg = craftEnderiumGear(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftResonantEnergyCellFrame(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftMachineFrameResonant(64)
+    if not success then print(errMsg); dumpAll() end
+
+    success, errMsg = craftSolarPanelVI(64)
+    if not success then print(errMsg); dumpAll() end
+  end
 elseif tArgs[1] == 'sp1' then
   dumpAll()
   while true do

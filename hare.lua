@@ -1,5 +1,4 @@
 local DEBUG = false
-print('hare ver 4')
 -- A utility module for ComputerCraft's turtles that adds several functions
 
 -- TODO switch from return values to exceptions for errors
@@ -77,9 +76,11 @@ function forward(steps)
 
   gpsx, gpsy, gpsz = gps.locate()
   if DEBUG and gpsx ~= nil and (gpsx ~= x or gpsy ~= y or gpsz ~= z) then
-    print('Pos out of sync with GPS!')
-    print('!!! Pos: ' .. x .. ' ' .. y .. ' ' .. z)
-    print('!!! GPS: ' .. gpsx .. ' ' .. gpsy .. ' ' .. gpsz)
+    -- TODO this will trigger when first using GPS to determine the compass direction
+    -- TODO add ability to turn off GPS checking; it slows the turtle down when outside of GPS range
+    print('Position out of sync with GPS!')
+    print('Pos: ' .. x .. ' ' .. y .. ' ' .. z)
+    print('GPS: ' .. gpsx .. ' ' .. gpsy .. ' ' .. gpsz)
   end
   return true
 end

@@ -10,7 +10,7 @@ if tonumber(tArgs[2]) == nil then tArgs[2] = 8 end
 local FORWARD_LEN = tonumber(tArgs[1])
 local RIGHT_LEN = tonumber(tArgs[2])
 local i
-
+local pearlCount = 0
 
 local movements = hare.split(hare.getAreaCoverActions(FORWARD_LEN, RIGHT_LEN, true))
 
@@ -25,7 +25,7 @@ while true do
       for i=1,16 do
         turtle.select(i)
         itemData = turtle.getItemDetail()
-        if itemData ~= nil and itemData['name'] == 'ExtraUtilities:plant/ender_lilly' then
+        if itemData ~= nil and itemData['name'] == 'minecraft:ender_pearl' then
           pearlCount = pearlCount + turtle.getItemCount()
           turtle.dropDown(64) -- deposit into chest
         end
@@ -36,7 +36,7 @@ while true do
       -- nothing is under the turtle, so try to plant lilly
       hare.selectItem('ExtraUtilities:plant/ender_lilly')
       turtle.placeDown()
-    elseif block['name'] == 'ExtraUtilities:plant/ender_lilly' and block['metadata'] == 3 then
+    elseif block['name'] == 'ExtraUtilities:plant/ender_lilly' and block['metadata'] == 7 then
       -- ender pearl (and fully mature) is below, so harvest it
       turtle.digDown()
       turtle.suckDown() -- pick up any ender pearls
@@ -44,4 +44,5 @@ while true do
       turtle.placeDown()
     end
   end
+  os.sleep(15*60)
 end
