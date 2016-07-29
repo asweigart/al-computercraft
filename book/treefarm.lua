@@ -1,82 +1,52 @@
--- assumes saplings in slots 1-4, bonemeal in slots 5-8, wood in 9-16
+-- Tree Farming program
+-- By Al Sweigart
+-- al@inventwithpython.com
+-- Plants tree then cuts it down.
 
+os.loadAPI('hare')
 
-local function selectSapling()
-  turtle.select(1)
-  if turtle.getItemCount() ~= 0 then
-    return true
-  end
-  turtle.select(2)
-  if turtle.getItemCount() ~= 0 then
-    return true
-  end
-  turtle.select(3)
-  if turtle.getItemCount() ~= 0 then
-    return true
-  end
-  turtle.select(4)
-  if turtle.getItemCount() ~= 0 then
-    return true
-  end
-  return false
+-- check if choptree program exists
+if not fs.exists('choptree') then
+  print('ERROR: You need the choptree program')
+  print('installed to run this.')
+  return
 end
-
-local function selectBonemeal()
-  local i
-  for i = 5, 15 do
-    turtle.select(i)
-    if turtle.getItemCount() ~= 0 then
-      return true
-    end
-  end
-  return false
-end
-
 
 local i
 while true do
-  if selectSapling() == false then
+  -- check for saplings
+  if hare.selectItem('sapling') == false then
     print('Out of saplings.')
+    return
   end
 
+  print('Planting...')
   turtle.place() -- plant sapling
 
   -- place bonemeal until a tree grows
-  while true do
-    if selectBonemeal() == false then
-      print('Out of bonemeal.')
-    end
-
+  while hare.selectItem('dye') do
+    print('Using bonemeal...')
     if turtle.place() == false then
       break -- tree has grown
     end
+    os.sleep(1) -- 1 second pause
   end
 
   -- wait until a tree has grown
   while true do
-    success, itemData = turtle.inspect()
-    if itemData ~= nil and itemData['name'] == 'minecraft:sapling' then
+    result, item = turtle.inspect()
+    if item ~= nil and item['name'] == 'minecraft:sapling' then
       print('Waiting for sapling to grow...')
-      os.sleep(5)
+      os.sleep(15) -- wait 15 seconds
     else
       break
     end
   end
 
-  turtle.select(16)
-  turtle.dig()
-  turtle.forward()
-  while turtle.compareUp() do
-    turtle.digUp()
-    turtle.up()
-  end
-  -- move back down
-  while not turtle.detectDown() do
-    turtle.down()
-  end
+  hare.selectEmptySlot()
+  os.loadAPI('choptree') -- chop tree
 
   -- pick up any saplings & apples on the ground
-  turtle.select(14)
   for i = 1, 4 do
     turtle.suck()
     turtle.turnLeft()
@@ -86,10 +56,13 @@ while true do
   turtle.back()
   turtle.turnLeft()
   turtle.turnLeft()
-  for i = 14, 16 do
-    turtle.select(i)
-    turtle.drop()
+  while hare.selectItem('log') do
+    turtle.drop(64)
   end
+  while hare.selectItem('apple') do
+    turtle.drop(64)
+  end
+  
   turtle.turnLeft()
   turtle.turnLeft()
 end

@@ -4,7 +4,7 @@
 -- Consumes all fuel smartly.
 
 os.loadAPI('hare')
-local consumed, slot
+local consumed, slot, fuelType, fuelAmount
 local FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
 
 -- check if server is set to unlimited
