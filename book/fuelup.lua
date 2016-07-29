@@ -25,6 +25,7 @@ for slot=1,16 do
 
   local item = turtle.getItemDetail(slot)
   if item ~= nil and item['name'] == 'minecraft:lava_bucket' then
+    turtle.select(slot)
     turtle.refuel(1) -- consume lava
   end
 end
@@ -33,16 +34,15 @@ end
 for slot=1,16 do
   -- check if there is fuel in slot
   -- or that we aren't full yet
-  while turtle.getItemCount(slot) > 0 and turtle.getFuelLevel() < turtle.getFuelLimit() do
-    local item = turtle.getItemDetail(slot)
-    if item ~= nil then
-      if item['name'] == 'minecraft:coal' or
-         item['name'] == 'minecraft:log' or
-         string.find(item['name'], 'sapling') ~= nil or
-         string.find(item['name'], 'planks') ~= nil then
-
-        turtle.refuel(1) -- consume fuel
-      end
+  local item = turtle.getItemDetail(slot)
+  if item ~= nil and
+     (item['name'] == 'minecraft:coal' or
+     item['name'] == 'minecraft:log' or
+     string.find(item['name'], 'sapling') ~= nil or
+     string.find(item['name'], 'planks') ~= nil) then
+    turtle.select(slot)
+    while turtle.getItemCount(slot) > 0 and turtle.getFuelLevel() < turtle.getFuelLimit() do
+      turtle.refuel(1) -- consume fuel
     end
   end
 end
