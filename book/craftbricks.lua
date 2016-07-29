@@ -16,7 +16,7 @@ while true do
     turtle.select(16) -- craft to slot 16
     turtle.craft() -- craft stone brick
 
-    counter = counter + 1
+    counter = counter + 4
     print('I have made ' .. counter .. ' bricks.')
     turtle.drop() -- put stone brick into chest
   else

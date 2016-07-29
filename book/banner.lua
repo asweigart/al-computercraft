@@ -1,30 +1,27 @@
-local tArgs = {...}
+-- Banner program
+-- By Al Sweigart
+-- al@inventwithpython.com
+-- Displays a scrolling banner.
 
-pos = tArgs[1]
-size = tonumber(tArgs[2])
-delay = tonumber(tArgs[3])
-msg = tArgs[4]
+local tArgs = {...}
+size = tonumber(tArgs[1])
+msg = tArgs[2]
 if msg == nil then
-  print('Usage: banner pos size delay "Msg"')
+  print('Usage: banner size "message"')
   return
 end
 
-mon = peripheral.wrap(pos)
+mon = peripheral.wrap('back')
 if mon == nil then
-  print('No monitor on ' .. pos .. ' side.')
+  print('ERROR: No monitor behind turtle!')
   return
 end
 
 if size < 0.5 or size > 5 then
-  print('Text size must be between 0.5 and 5.')
+  print('ERROR: Size must be between 0.5 and 5!')
   return
 end
 mon.setTextScale(size)
-
-if delay < 0 or delay > 2 then
-  print('Delay must be between 0 and 2.')
-  return
-end
 
 width, height = mon.getSize()
 row = math.floor(height / 2)
@@ -33,7 +30,7 @@ if row == 0 then
 end
 
 print('Hold Ctrl+T to stop.')
-print('Running banner...')
+print('Scrolling banner...')
 mon.clear()
 indent = width
 consume = 0
@@ -51,5 +48,5 @@ while true do
   mon.setCursorPos(1, row)
   mon.clearLine()
   mon.write(display)
-  os.sleep(delay)
+  os.sleep(0.1)
 end

@@ -4,7 +4,7 @@
 -- Consumes all fuel smartly.
 
 os.loadAPI('hare')
-local consumed, slot, fuelType, fuelAmount
+local slot, fuelType, fuelAmount
 local FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
 
 -- check if server is set to unlimited
@@ -24,9 +24,8 @@ print('Fueling...')
 -- search for each type of fuel
 for fuelType, fuelAmount in pairs(FUEL_TABLE) do
   while hare.fuelSpace() > fuelAmount and hare.selectItem(fuelType) do
-    consumed = turtle.refuel(1) -- consume lava
-    if not consumed then
-      break -- break if not consumed
+    if not turtle.refuel(1) then
+      break -- stop if not consumable
     end
   end
 end
