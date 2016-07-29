@@ -10,16 +10,16 @@ if turtle.getFuelLimit() == 'unlimited' then
 end
 
 -- display fuel amounts
-io.write(tostring(turtle.getFuelLevel()))
+io.write(turtle.getFuelLevel())
 io.write(' / ')
-io.write(tostring(turtle.getFuelLimit()))
+io.write(turtle.getFuelLimit())
 io.write('    ')
 
 -- display fuel percentages
 local amt = 100 * turtle.getFuelLevel() / turtle.getFuelLimit()
-print(tostring(amt) .. '%')
+print(amt .. '%')
 
 -- display space left
 local spaceLeft = turtle.getFuelLimit() - turtle.getFuelLevel()
-print('Space left: ' .. tostring(spaceLeft))
+print('Space left: ' .. spaceLeft)
 

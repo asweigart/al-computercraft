@@ -19,7 +19,7 @@ while true do
     -- check if at the goal
     result, block = turtle.inspectDown()
     if result ~= nil and block['name'] == GOAL_BLOCK then
-      print('Solved the maze in ' .. tostring(steps) .. ' steps!')
+      print('Solved the maze in ' .. steps .. ' steps!')
       return
     end
 
