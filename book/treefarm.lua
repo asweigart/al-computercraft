@@ -23,6 +23,8 @@ while true do
   print('Planting...')
   turtle.place() -- plant sapling
 
+  -- TODO: add bonemeal code here
+
   -- wait until a tree has grown
   while true do
     result, item = turtle.inspect()
