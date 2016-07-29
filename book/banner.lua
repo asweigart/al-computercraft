@@ -32,7 +32,7 @@ if row == 0 then
   row = 1
 end
 
-print('Press Ctrl-T to stop.')
+print('Hold Ctrl+T to stop.')
 print('Running banner...')
 mon.clear()
 indent = width
