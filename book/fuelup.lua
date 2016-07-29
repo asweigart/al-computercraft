@@ -3,6 +3,10 @@
 -- al@inventwithpython.com
 -- Consumes all fuel smartly.
 
+os.loadAPI('hare')
+local consumed, slot
+local FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
+
 -- check if server is set to unlimited
 if turtle.getFuelLimit() == 'unlimited' then
   print('Unlimited fuel mode is enabled.')
@@ -15,34 +19,14 @@ if os.getComputerLabel() == nil then
   print('be lost when turtle is picked up!')
 end
 
--- search for lava in inventory first
-local slot
-for slot=1,16 do
-  -- check if we need 1000 fuel first
-  if turtle.getFuelLimit() - turtle.getFuelLevel() < 1000 then
-    break -- not enough empty space is fuel tank for lava
-  end
+print('Fueling...')
 
-  local item = turtle.getItemDetail(slot)
-  if item ~= nil and item['name'] == 'minecraft:lava_bucket' then
-    turtle.select(slot)
-    turtle.refuel(1) -- consume lava
-  end
-end
-
--- next search for other fuels
-for slot=1,16 do
-  -- check if there is fuel in slot
-  -- or that we aren't full yet
-  local item = turtle.getItemDetail(slot)
-  if item ~= nil and
-     (item['name'] == 'minecraft:coal' or
-     item['name'] == 'minecraft:log' or
-     string.find(item['name'], 'sapling') ~= nil or
-     string.find(item['name'], 'planks') ~= nil) then
-    turtle.select(slot)
-    while turtle.getItemCount(slot) > 0 and turtle.getFuelLevel() < turtle.getFuelLimit() do
-      turtle.refuel(1) -- consume fuel
+-- search for each type of fuel
+for fuelType, fuelAmount in pairs(FUEL_TABLE) do
+  while hare.fuelSpace() > fuelAmount and hare.selectItem(fuelType) do
+    consumed = turtle.refuel(1) -- consume lava
+    if not consumed then
+      break -- break if not consumed
     end
   end
 end
