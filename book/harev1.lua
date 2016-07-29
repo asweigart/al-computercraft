@@ -14,10 +14,8 @@ function fuelSpace()
 end
 
 function findItem(name, metadata)
-  -- finds inventory slot that has
-  -- the named item
-  -- returns slot number if found
-  -- returns nil if not found
+  -- finds inventory slot that has the named item
+  -- returns slot number if found, nil if not found
   local slot, item
 
   -- first try to find an exact match
@@ -30,7 +28,7 @@ function findItem(name, metadata)
     end
   end
 
-  -- try to find a similar match
+  -- next try to find a similar match
   for slot=1,16 do
     item = turtle.getItemDetail(slot)
     if item ~= nil and 
@@ -40,43 +38,45 @@ function findItem(name, metadata)
     end
   end
 
-  return nil -- could not find item
+  return nil -- couldn't find item
 end
 
 
 function selectItem(name, metadata)
-  -- selects inventory slot that has
-  -- the named item
-  -- return true if found
-  -- returns false if not found
+  -- selects inventory slot that has the named item
+  -- return true if found, false if not found
   local slot = findItem(name, metadata)
 
   if slot ~= nil then
     turtle.select(slot)
     return true
   else
-    return false
+    return false -- couldn't find item
   end
 end
 
 
 function findEmptySlot()
+  -- finds inventory slot that has nothing in it
+  -- returns slot number if found, nil if not found
   local slot
   for slot=1,16 do
     if turtle.getItemCount(slot) == 0 then
       return slot
     end
   end
-  return nil
+  return nil -- couldn't find empty space
 end
 
 
 function selectEmptySlot()
+  -- selects inventory slot that has nothing in it
+  -- return true if found, false if not found
   local slot = findEmptySlot()
   if slot ~= nil then
     turtle.select(slot)
     return true
   else
-    return false
+    return false -- couldn't find empty space
   end
 end

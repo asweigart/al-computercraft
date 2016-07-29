@@ -46,12 +46,6 @@ while true do
   hare.selectEmptySlot()
   os.loadAPI('choptree') -- chop tree
 
-  -- pick up any saplings & apples on the ground
-  for i = 1, 4 do
-    turtle.suck()
-    turtle.turnLeft()
-  end
-
   -- move to chest
   turtle.back()
   turtle.turnLeft()
@@ -59,10 +53,6 @@ while true do
   while hare.selectItem('log') do
     turtle.drop(64)
   end
-  while hare.selectItem('apple') do
-    turtle.drop(64)
-  end
-  
   turtle.turnLeft()
   turtle.turnLeft()
 end
