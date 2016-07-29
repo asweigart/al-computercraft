@@ -23,15 +23,6 @@ while true do
   print('Planting...')
   turtle.place() -- plant sapling
 
-  -- place bonemeal until a tree grows
-  while hare.selectItem('dye') do
-    print('Using bonemeal...')
-    if turtle.place() == false then
-      break -- tree has grown
-    end
-    os.sleep(1) -- 1 second pause
-  end
-
   -- wait until a tree has grown
   while true do
     result, item = turtle.inspect()
