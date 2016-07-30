@@ -3,28 +3,31 @@
 -- al@inventwithpython.com
 -- Displays a scrolling banner.
 
-local tArgs = {...}
-size = tonumber(tArgs[1])
-msg = tArgs[2]
+local cliArgs = {...}
+size = tonumber(cliArgs[1])
+msg = cliArgs[2]
 if msg == nil then
   print('Usage: banner size "message"')
   return
 end
 
+-- connect to the monitor
 mon = peripheral.wrap('back')
 if mon == nil then
   print('ERROR: No monitor behind turtle!')
   return
 end
 
+-- check for valid text size
 if size < 0.5 or size > 5 then
   print('ERROR: Size must be between 0.5 and 5!')
   return
 end
 mon.setTextScale(size)
 
+-- get the monitor size
 width, height = mon.getSize()
-row = math.floor(height / 2)
+row = math.floor(height / 2) -- text's row
 if row == 0 then
   row = 1
 end
@@ -32,19 +35,26 @@ end
 print('Hold Ctrl+T to stop.')
 print('Scrolling banner...')
 mon.clear()
+
+-- make the scrolling text
 indent = width
 consume = 0
 while true do
   if indent > 0 then
+    -- add indentation to the start
     display = string.rep(' ', indent) .. msg
     indent = indent - 1
   elseif consume <= string.len(msg) then
+    -- remove letters from the start
     display = string.sub(msg, consume)
     consume = consume + 1
   else
+    -- reset indent and consume
     indent = width
     consume = 0
   end
+
+  -- display the text
   mon.setCursorPos(1, row)
   mon.clearLine()
   mon.write(display)

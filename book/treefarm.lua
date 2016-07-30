@@ -39,7 +39,7 @@ while true do
   hare.selectEmptySlot()
   os.loadAPI('choptree') -- chop tree
 
-  -- move to chest
+  -- drop logs into chest
   turtle.back()
   turtle.turnLeft()
   turtle.turnLeft()

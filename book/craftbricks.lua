@@ -4,7 +4,7 @@
 -- Stone brick factory robot, 3 of 3
 
 print('Starting brick crafting program...')
-counter = 0
+local counter = 0
 while true do
   turtle.select(1) -- load stone here
   turtle.suckUp() -- get stone from furnace

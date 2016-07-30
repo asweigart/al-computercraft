@@ -1,12 +1,10 @@
-local tArgs = {...}
-
-pos = tArgs[1]
-txtcol = tArgs[2]
-bgcol = tArgs[3]
+local cliArgs = {...}
+local txtcol = cliArgs[1]
+local bgcol = cliArgs[2]
 
 if bgcol == nil then
-  print('Usage: setcolor pos textcolor bgcolor')
-  print('Color must be one of:')
+  print('Usage: setcolor textcolor bgcolor')
+  print('Colors must be one of:')
   print('  white, orange, magenta, lightblue')
   print('  yellow, lime, pink, gray, lightgray')
   print('  cyan, purple, blue, brown, green')
@@ -15,6 +13,7 @@ if bgcol == nil then
 end
 
 local function getColorFromString(cstr)
+  -- return color value based on cstr
   cstr = string.lower(cstr)
   if cstr == 'white' then return colors.white end
   if cstr == 'orange' then return colors.orange end
@@ -34,14 +33,22 @@ local function getColorFromString(cstr)
   if cstr == 'black' then return colors.black end
   return nil
 end  
-  
 
-mon = peripheral.wrap(pos)
+-- connect to the monitor  
+mon = peripheral.wrap('back')
 if mon == nil then
-  print('No monitor on ' .. pos .. ' side.')
+  print('ERROR: No monitor behind turtle!')
   return
 end
 
-mon.setTextColor(getColorFromString(txtcol))
-mon.setBackgroundColor(getColorFromString(bgcol))
-mon.clear()
+-- set text color
+local col = getColorFromString(txtcol)
+if col ~= nil then
+  mon.setTextColor(col)
+end
+
+-- set background color
+col = getColorFromString(bgcol)
+if col ~= nil then
+  mon.setBackgroundColor(col)
+end

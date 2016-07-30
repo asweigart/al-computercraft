@@ -37,5 +37,15 @@ while true do
       isUp = true
     end
   end
+
+  -- spin:
+  if math.random(1, 2) == 1 then
+    local i
+    for i=1,4 do
+      turtle.turnLeft()
+    end
+    for i=1,4 do
+      turtle.turnRight()
+    end
 end
 
