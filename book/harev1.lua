@@ -28,6 +28,11 @@ function findItem(name, metadata)
     end
   end
 
+  -- don't try a similar match if name has a colon (like "minecraft:")
+  if string.find(name, ':') ~= nil then
+    return nil
+  end
+
   -- next try to find a similar match
   for slot=1,16 do
     item = turtle.getItemDetail(slot)

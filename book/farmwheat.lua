@@ -15,7 +15,7 @@ if columnsArg == nil then
 end
 
 
-function checkForChest()
+function findChest()
   -- check if next to chest
   local foundChest = false
   local i
@@ -28,25 +28,27 @@ function checkForChest()
     turtle.turnRight()
   end
   if not foundChest then
-    print('ERROR: Must start next to a chest!')
+    return false
   end
 
-  -- turn to face field
-  turtle.turnRight()
-  turtle.turnRight()
+  return true
 end
 
 
-function sweepField(rows, columns)
+function sweepField(rows, columns, sweepFunc, endSweepFunc)
   local turnRight = true
   local columnStep, rowStep
   for columnStep=1,columns do
-    checkCrop()
+    if sweepFunc ~= nil then
+      sweepFunc()
+    end
 
     -- move forward through rows
     for rowStep=1,rows-1 do
       turtle.forward()
-      checkCrop()
+      if sweepFunc ~= nil then
+        sweepFunc()
+      end
     end
 
     if columnStep == columns then
@@ -68,7 +70,7 @@ function sweepField(rows, columns)
     end
   end
 
-  -- move back to the chest
+  -- move back to the start
   if columns % 2 == 0 then
     turtle.turnRight()
   else
@@ -80,13 +82,11 @@ function sweepField(rows, columns)
   for i=1,columns-1 do
     turtle.forward()
   end
-  turtle.turnLeft()
+  turtle.turnRight()
 
-  storeWheat()
-
-  -- face field again
-  turtle.turnLeft()
-  turtle.turnLeft()
+  if endSweepFunc ~= nil then
+    endSweepFunc()
+  end
 end
 
 
@@ -119,23 +119,38 @@ end
 
 
 function storeWheat()
-  -- make sure chest is in front
-  local result, block = turtle.inspect()
-  if block == nil or block['name'] ~= 'minecraft:chest' then
-    print('Warning: Not in front of chest.')
-    return false
+  if not findChest() then -- face the chest
+    print('Warning: Could not find chest.')
+    return
   end
 
+  -- drop off wheat
   while hare.selectItem('minecraft:wheat') do
     print('Dropping off ' .. turtle.getItemCount() .. ' wheat...')
     turtle.drop()
   end
+
+  -- face field again
+  turtle.turnLeft()
+  turtle.turnLeft()
 end
 
 
 print('Hold Ctrl+T to stop.')
-checkForChest()
+if not findChest() then
+  print('ERROR: Must start next to a chest!')
+end
 while true do
+  -- check fuel
+  if turtle.getFuelLevel() < (rowsArg * columnsArg) + rowsArg + columnsArg then
+    print('ERROR: Not enough fuel.')
+    return
+  end
+
+  -- farm wheat
   print('Sweeping field...')
-  sweepField(rowsArg, columnsArg)
+  sweepField(rowsArg, columnsArg, checkCrop, storeWheat)
+
+  print('Sleeping for 10 minutes...')
+  os.sleep(600)
 end
