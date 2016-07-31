@@ -87,6 +87,21 @@ function selectEmptySlot()
 end
 
 
+function findBlock(name)
+  -- spins aorund searching for the named block
+  local foundBlock = false
+  local i
+  for i=1,4 do
+    local result, block = turtle.inspect()
+    if block ~= nil and block['name'] == name then
+      return true
+    end
+    turtle.turnRight()
+  end
+  return false
+end
+
+
 function sweepField(rows, columns, sweepFunc, endSweepFunc)
   local turnRight = true
   local columnStep, rowStep
@@ -97,7 +112,7 @@ function sweepField(rows, columns, sweepFunc, endSweepFunc)
 
     -- move forward through rows
     for rowStep=1,rows-1 do
-      turtle.forward()
+      if not turtle.forward() then return false end
       if sweepFunc ~= nil then
         sweepFunc()
       end
@@ -111,12 +126,12 @@ function sweepField(rows, columns, sweepFunc, endSweepFunc)
     -- turn to the next column
     if turnRight then
       turtle.turnRight()
-      turtle.forward()
+      if not turtle.forward() then return false end
       turtle.turnRight()
       turnRight = false
     else
       turtle.turnLeft()
-      turtle.forward()
+      if not turtle.forward() then return false end
       turtle.turnLeft()
       turnRight = true
     end
@@ -127,16 +142,36 @@ function sweepField(rows, columns, sweepFunc, endSweepFunc)
     turtle.turnRight()
   else
     for i=1,rows-1 do
-      turtle.back()
+      if not turtle.back() then return false end
     end
     turtle.turnLeft()
   end
   for i=1,columns-1 do
-    turtle.forward()
+     if not turtle.forward() then return false end
   end
   turtle.turnRight()
 
   if endSweepFunc ~= nil then
     endSweepFunc()
   end
+
+  return true
 end
+
+
+function countItems(name)
+  -- returns the number of items with
+  -- the exact given name that are in
+  -- the turtle's inventory
+
+  local total = 0
+  local slot
+  for slot=1,16 do
+    item = turtle.getItemDetail(slot)
+    if item ~= nil and item['name'] == name then
+      total = total + item['count']
+    end
+  end
+  return total
+end
+

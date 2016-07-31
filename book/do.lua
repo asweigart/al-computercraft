@@ -146,9 +146,9 @@ end
 local cliArgs = {...}
 if #cliArgs == 0 then
 	print('Usage: do [actions]')
-	print('See hare.lua for actions.')
+	print('See source code for actions.')
 	return
 end
 
 local actions = table.concat(cliArgs, ' ')
-print(hare.doActions(actions))
+print(doActions(actions))

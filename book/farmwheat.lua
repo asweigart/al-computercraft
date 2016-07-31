@@ -15,83 +15,8 @@ if columnsArg == nil then
 end
 
 
-function findChest()
-  -- check if next to chest
-  local foundChest = false
-  local i
-  for i=1,4 do
-    local result, block = turtle.inspect()
-    if block ~= nil and block['name'] == 'minecraft:chest' then
-      foundChest = true
-      break
-    end
-    turtle.turnRight()
-  end
-  if not foundChest then
-    return false
-  end
-
-  return true
-end
-
-
-function sweepField(rows, columns, sweepFunc, endSweepFunc)
-  local turnRight = true
-  local columnStep, rowStep
-  for columnStep=1,columns do
-    if sweepFunc ~= nil then
-      sweepFunc()
-    end
-
-    -- move forward through rows
-    for rowStep=1,rows-1 do
-      turtle.forward()
-      if sweepFunc ~= nil then
-        sweepFunc()
-      end
-    end
-
-    if columnStep == columns then
-      -- don't turn on the last column
-      break
-    end
-
-    -- turn to the next column
-    if turnRight then
-      turtle.turnRight()
-      turtle.forward()
-      turtle.turnRight()
-      turnRight = false
-    else
-      turtle.turnLeft()
-      turtle.forward()
-      turtle.turnLeft()
-      turnRight = true
-    end
-  end
-
-  -- move back to the start
-  if columns % 2 == 0 then
-    turtle.turnRight()
-  else
-    for i=1,rows-1 do
-      turtle.back()
-    end
-    turtle.turnLeft()
-  end
-  for i=1,columns-1 do
-    turtle.forward()
-  end
-  turtle.turnRight()
-
-  if endSweepFunc ~= nil then
-    endSweepFunc()
-  end
-end
-
-
 function checkCrop()
-  result, block = turtle.inspectDown()
+  local result, block = turtle.inspectDown()
 
   if result == false then
     turtle.digDown() -- till the soil
@@ -119,7 +44,7 @@ end
 
 
 function storeWheat()
-  if not findChest() then -- face the chest
+  if not hare.findBlock('minecraft:chest') then -- face the chest
     print('Warning: Could not find chest.')
     return
   end
@@ -137,11 +62,16 @@ end
 
 
 print('Hold Ctrl+T to stop.')
-if not findChest() then
+if not hare.findBlock('minecraft:chest') then
   print('ERROR: Must start next to a chest!')
 end
+
+-- face field
+turtle.turnLeft()
+turtle.turnLeft()
+
 while true do
-  -- check fuel
+    -- check fuel
   if turtle.getFuelLevel() < (rowsArg * columnsArg) + rowsArg + columnsArg then
     print('ERROR: Not enough fuel.')
     return
@@ -149,7 +79,7 @@ while true do
 
   -- farm wheat
   print('Sweeping field...')
-  sweepField(rowsArg, columnsArg, checkCrop, storeWheat)
+  hare.sweepField(rowsArg, columnsArg, checkCrop, storeWheat)
 
   print('Sleeping for 10 minutes...')
   os.sleep(600)
