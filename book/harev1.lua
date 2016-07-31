@@ -22,7 +22,7 @@ function findItem(name, metadata)
   for slot=1,16 do
     item = turtle.getItemDetail(slot)
     if item ~= nil and 
-       item['name'] == 'minecraft:' .. name and
+       item['name'] == name and
        (metadata == nil or item['metadata'] == metadata) then
       return slot
     end
