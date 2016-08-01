@@ -1,3 +1,8 @@
+-- Set Color program
+-- By Al Sweigart
+-- turtleappstore.com/users/AlSweigart
+-- Sets the color on the monitor behind the turtle.
+
 local cliArgs = {...}
 local txtcol = cliArgs[1]
 local bgcol = cliArgs[2]

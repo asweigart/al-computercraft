@@ -1,11 +1,12 @@
 -- "Do" program
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Does various actions from shell.
 
 function doAction(action)
   action = string.lower(action)
 
+  -- look at these strings for the action codes
   if action == 'f' then
     return turtle.forward()
   elseif action == 'b' then
@@ -147,6 +148,10 @@ local cliArgs = {...}
 if #cliArgs == 0 then
 	print('Usage: do [actions]')
 	print('See source code for actions.')
+	print('For example: "do l f 3 r b 2" will turn')
+	print('left, go forward 3 times, turn right,')
+	print('then move back 2 times.')
+
 	return
 end
 

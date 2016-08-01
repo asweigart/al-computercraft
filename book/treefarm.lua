@@ -1,6 +1,6 @@
 -- Tree Farming program
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Plants tree then cuts it down.
 
 os.loadAPI('hare')
