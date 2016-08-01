@@ -174,4 +174,3 @@ function countItems(name)
   end
   return total
 end
-
