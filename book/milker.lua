@@ -28,8 +28,7 @@ end
 function storeMilkBuckets()
   -- face the milk bucket chest
   if not hare.findBlock('minecraft:chest') then
-    print('ERROR: Cannot find milk bucket chest!')
-    return
+    error('ERROR: Cannot find milk bucket chest!')
   end
 
   -- drop any item that isn't an empty bucket

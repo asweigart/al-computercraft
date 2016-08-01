@@ -24,8 +24,9 @@ function storeItems()
   -- drop off items
   local slot
   for slot=1,16 do
-    turtle.select(slot)
-    turtle.drop()
+    if turtle.getItemCount(slot) > 0 then
+      turtle.drop()
+    end
   end
 
   -- face field again
