@@ -2,6 +2,9 @@
 -- By Al Sweigart
 -- al@inventwithpython.com
 -- Automatically farms carrots.
+-- Assumes a field is forward and to
+-- the right of the turtle, with a
+-- chest behind it.
 
 --[[
 IMPORTANT NOTE!!!
@@ -18,7 +21,7 @@ local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
 if columnsArg == nil then
-  print('Usage: farmcarrots rows columns')
+  print('Usage: farmcarrots <forward> <right>')
   return
 end
 

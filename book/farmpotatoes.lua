@@ -18,7 +18,7 @@ local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
 if columnsArg == nil then
-  print('Usage: farmpotatoes rows columns')
+  print('Usage: farmpotatoes <forward> <right>')
   return
 end
 

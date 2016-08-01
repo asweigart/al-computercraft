@@ -1,9 +1,7 @@
 -- Furnace Fueler program
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Stone brick factory robot, 2 of 3
-
-local slot
 
 while true do
   -- get fuel from chest
@@ -12,6 +10,7 @@ while true do
   end
 
   -- put fuel in furnace
+  local slot
   for slot=1,16 do
     turtle.select(slot)
     if turtle.drop() then
@@ -21,5 +20,5 @@ while true do
 
   -- pause
   print('Sleeping...')
-  os.sleep(60)
+  os.sleep(60)  -- wait 1 minute
 end

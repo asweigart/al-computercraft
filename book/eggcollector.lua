@@ -2,6 +2,9 @@
 -- By Al Sweigart
 -- al@inventwithpython.com
 -- Collects eggs in a field.
+-- Assumes a field is forward and to
+-- the right of the turtle, with a
+-- chest behind it.
 
 os.loadAPI('hare')
 
@@ -16,7 +19,8 @@ end
 
 
 function storeItems()
-  if not hare.findBlock('minecraft:chest') then -- face the chest
+  -- face the chest
+  if not hare.findBlock('minecraft:chest') then 
     print('Warning: Could not find chest.')
     return
   end
@@ -29,7 +33,7 @@ function storeItems()
     end
   end
 
-  -- face field again
+  -- face field
   turtle.turnLeft()
   turtle.turnLeft()
 end

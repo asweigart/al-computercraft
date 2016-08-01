@@ -1,24 +1,24 @@
 -- Chop Tree program
 -- By Al Sweigart
 -- al@inventwithpython.com
--- Run with tree in front of turtle
--- to chop it down.
+-- Chops down the tree in front of turtle.
 
 if not turtle.detect() then
-  return -- nothing there, so exit
+  print('ERROR: Could not find tree!')
+  return  -- no tree there, so exit
 end
 
 print('Chopping tree...')
 
-turtle.dig() -- chop base
-turtle.forward() -- move under tree
+turtle.dig()  -- chop base of tree
+turtle.forward()  -- move under tree
 while turtle.compareUp() do
   -- keep chopping until no more wood
   turtle.digUp()
   turtle.up()  
 end
 
--- move back to ground
+-- move back down to ground
 while not turtle.detectDown() do
   turtle.down()
 end

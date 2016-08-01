@@ -11,7 +11,7 @@ local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
 if columnsArg == nil then
-  print('Usage: shearer rows columns')
+  print('Usage: shearer <forward> <right>')
   return
 end
 

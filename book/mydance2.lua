@@ -8,7 +8,7 @@ local isBack = false
 
 print('Hold Ctrl+T to stop dancing.')
 while true do
-  -- turn moves:
+  -- turn moves
   if math.random(1, 2) == 1 then
     turtle.turnLeft()
   end
@@ -16,7 +16,7 @@ while true do
     turtle.turnRight()
   end
 
-  -- move forward/back:
+  -- forward/back moves
   if math.random(1, 2) == 1 then
     if isBack == true then
       turtle.forward()
@@ -27,7 +27,7 @@ while true do
     end
   end
 
-  -- move up/down:
+  -- up/down moves
   if math.random(1, 2) == 1 then
     if isUp == true then
       turtle.down()
@@ -38,7 +38,7 @@ while true do
     end
   end
 
-  -- spin:
+  -- spin around
   if math.random(1, 2) == 1 then
     local i
     for i=1,4 do
@@ -47,5 +47,5 @@ while true do
     for i=1,4 do
       turtle.turnRight()
     end
+  end
 end
-

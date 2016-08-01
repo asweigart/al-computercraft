@@ -11,7 +11,7 @@ local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
 if columnsArg == nil then
-  print('Usage: milker rows columns')
+  print('Usage: milker <forward> <right>')
   return
 end
 

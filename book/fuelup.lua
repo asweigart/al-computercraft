@@ -1,10 +1,12 @@
 -- Fueling program
 -- By Al Sweigart
 -- al@inventwithpython.com
--- Consumes all fuel smartly.
+-- Consumes all in inventory fuel.
 
 os.loadAPI('hare')
 local slot, fuelType, fuelAmount
+
+-- keys=fuel name, values=fuel amount
 local FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
 
 -- check if server is set to unlimited
@@ -25,7 +27,7 @@ print('Fueling...')
 for fuelType, fuelAmount in pairs(FUEL_TABLE) do
   while hare.fuelSpace() > fuelAmount and hare.selectItem(fuelType) do
     if not turtle.refuel(1) then
-      break -- stop if not consumable
+      break  -- stop if not a fuel
     end
   end
 end
