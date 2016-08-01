@@ -52,7 +52,13 @@ function storeWheat()
   -- drop off wheat
   while hare.selectItem('minecraft:wheat') do
     print('Dropping off ' .. turtle.getItemCount() .. ' wheat...')
-    turtle.drop()
+    if not turtle.drop() then
+      print('Wheat chest is full!')
+      print('Waiting for chest to be emptied...')
+      while not turtle.drop() do
+        os.sleep(10)
+      end
+    end
   end
 
   -- face field again

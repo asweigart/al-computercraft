@@ -63,7 +63,13 @@ function storePotatoes()
     hare.selectItem('minecraft:potato')
     local numToDropOff = math.min((hare.countItems('minecraft:potato') - numToSave), turtle.getItemCount())
     print('Dropping off ' .. numToDropOff .. ' potatoes...')
-    turtle.drop(numToDropOff)
+    if not turtle.drop(numToDropOff) then
+      print('Potato chest is full!')
+      print('Waiting for chest to be emptied...')
+      while not turtle.drop(numToDropOff) do
+        os.sleep(10)
+      end
+    end
   end
 
   -- face field again
