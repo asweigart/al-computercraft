@@ -1,16 +1,17 @@
 -- Milker program
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Milks cows in a field.
-
 
 os.loadAPI('hare')
 
+-- handle command line arguments
 local cliArgs = {...}
 local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
-if columnsArg == nil then
+-- display "usage" info
+if columnsArg == nil or cliArgs[1] == '?' then
   print('Usage: milker <forward> <right>')
   return
 end

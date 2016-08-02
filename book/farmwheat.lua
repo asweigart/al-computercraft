@@ -13,7 +13,8 @@ local cliArgs = {...}
 local maxForward = tonumber(cliArgs[1])
 local maxRight = tonumber(cliArgs[2])
 
-if maxRight == nil then
+-- display "usage" info
+if maxRight == nil or cliArgs[1] == '?' then
   print('Usage: farmwheat <forward> <right>')
   return
 end

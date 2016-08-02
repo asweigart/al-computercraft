@@ -1,13 +1,17 @@
 -- Banner program
 -- By Al Sweigart
--- al@inventwithpython.com
--- Displays a scrolling banner.
+-- turtleappstore.com/users/AlSweigart
+-- Displays a scrolling banner on the
+-- monitor behind the turtle.
 
+-- handle command line arguments
 local cliArgs = {...}
 size = tonumber(cliArgs[1])
 msg = cliArgs[2]
-if msg == nil then
-  print('Usage: banner size "message"')
+
+-- display "usage" info
+if msg == nil or cliArgs[1] == '?' then
+  print('Usage: <banner> <size> <"message">')
   return
 end
 
@@ -27,7 +31,7 @@ mon.setTextScale(size)
 
 -- get the monitor size
 width, height = mon.getSize()
-row = math.floor(height / 2) -- text's row
+row = math.floor(height / 2)   -- text's row
 if row == 0 then
   row = 1
 end
@@ -54,7 +58,7 @@ while true do
     consume = 0
   end
 
-  -- display the text
+  -- display the scrolling text
   mon.setCursorPos(1, row)
   mon.clearLine()
   mon.write(display)

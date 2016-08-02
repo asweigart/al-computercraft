@@ -1,9 +1,9 @@
 -- Fueling program
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Consumes all in inventory fuel.
 
-os.loadAPI('hare')
+os.loadAPI('hare')  -- load the hare library
 local slot, fuelType, fuelAmount
 
 -- keys=fuel name, values=fuel amount

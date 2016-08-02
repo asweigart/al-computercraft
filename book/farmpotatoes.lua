@@ -1,6 +1,6 @@
 -- Farm Potatoes program
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Automatically farms potatoes.
 
 --[[
@@ -13,11 +13,13 @@ in your inventory are called
 
 os.loadAPI('hare')
 
+-- handle command line arguments
 local cliArgs = {...}
 local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
-if columnsArg == nil then
+-- display "usage" info
+if columnsArg == nil or cliArgs[1] == '?' then
   print('Usage: farmpotatoes <forward> <right>')
   return
 end

@@ -1,6 +1,6 @@
 -- Dance program, version 2
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Make the turtle dance!
 
 local isUp = false

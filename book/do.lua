@@ -144,6 +144,7 @@ function doActions(actions)
 end
 
 
+-- display "usage" info
 local cliArgs = {...}
 if #cliArgs == 0 then
 	print('Usage: do [actions]')

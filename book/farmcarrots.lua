@@ -16,11 +16,13 @@ in your inventory are called
 
 os.loadAPI('hare')
 
+-- handle command line arguments
 local cliArgs = {...}
 local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
-if columnsArg == nil then
+-- display "usage" info
+if columnsArg == nil or cliArgs[1] == '?' then
   print('Usage: farmcarrots <forward> <right>')
   return
 end

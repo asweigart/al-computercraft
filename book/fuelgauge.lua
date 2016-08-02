@@ -1,6 +1,6 @@
 -- Fuel Gauge program
 -- By Al Sweigart
--- al@inventwithpython.com
+-- turtleappstore.com/users/AlSweigart
 -- Displays fuel info nicely.
 
 -- check if server is set to unlimited

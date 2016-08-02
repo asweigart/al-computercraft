@@ -3,18 +3,18 @@
 -- turtleappstore.com/users/AlSweigart
 -- Plants tree then cuts it down.
 
-os.loadAPI('hare')
+os.loadAPI('hare')  -- load the hare library
 
 -- check if choptree program exists
 if not fs.exists('choptree') then
   print('ERROR: You need the choptree program')
-  print('installed to run this.')
+  print('installed to run this program.')
   return
 end
 
 local i
 while true do
-  -- check for saplings
+  -- check inventory for saplings
   if hare.selectItem('sapling') == false then
     print('Out of saplings.')
     return
@@ -30,22 +30,26 @@ while true do
     result, item = turtle.inspect()
     if item ~= nil and item['name'] == 'minecraft:sapling' then
       print('Waiting for sapling to grow...')
-      os.sleep(15) -- wait 15 seconds
+      os.sleep(15)
     else
-      break
+      break  -- tree has grown
     end
   end
 
   hare.selectEmptySlot()
-  os.loadAPI('choptree') -- chop tree
+  os.loadAPI('choptree')  -- run choptree
 
-  -- drop logs into chest
+  -- move to and face chest
   turtle.back()
   turtle.turnLeft()
   turtle.turnLeft()
+
+  -- put logs into chest
   while hare.selectItem('log') do
-    turtle.drop(64)
+    turtle.drop()
   end
+
+  -- face planting spot
   turtle.turnLeft()
   turtle.turnLeft()
 end

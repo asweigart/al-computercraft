@@ -9,7 +9,8 @@ local MINIMUM_FUEL = 500 -- stops refueling after reaching this minimum
 local cliArgs = {...}
 local maxDepth = tonumber(cliArgs[1])
 
-if maxDepth == nil then
+-- display "usage" info
+if maxDepth == nil or cliArgs[1] == '?' then
   print('Usage: stairminer <maxDepth>')
   return
 end

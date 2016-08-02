@@ -1,13 +1,16 @@
 -- Set Color program
 -- By Al Sweigart
 -- turtleappstore.com/users/AlSweigart
--- Sets the color on the monitor behind the turtle.
+-- Sets the color on the monitor 
+-- behind the turtle.
 
+-- handle command line arguments
 local cliArgs = {...}
 local txtcol = cliArgs[1]
 local bgcol = cliArgs[2]
 
-if bgcol == nil then
+-- display "usage" info
+if bgcol == nil or cliArgs[1] == '?' then
   print('Usage: setcolor textcolor bgcolor')
   print('Colors must be one of:')
   print('  white, orange, magenta, lightblue')

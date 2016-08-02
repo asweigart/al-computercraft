@@ -8,12 +8,14 @@
 
 os.loadAPI('hare')
 
+-- handle command line arguments
 local cliArgs = {...}
 local rowsArg = tonumber(cliArgs[1])
 local columnsArg = tonumber(cliArgs[2])
 
-if columnsArg == nil then
-  print('Usage: eggcollect rows columns')
+-- display "usage" info
+if columnsArg == nil or cliArgs[1] == '?' then
+  print('Usage: eggcollect <forward> columns')
   return
 end
 
@@ -57,7 +59,8 @@ while true do
 
   -- collect eggs
   print('Sweeping field...')
-  hare.sweepField(rowsArg, columnsArg, turtle.suckDown, storeItems)
+  hare.sweepField(rowsArg, columnsArg, turtle.suckDown)
+  storeItems()
 
   print('Sleeping for 5 minutes...')
   os.sleep(300)
