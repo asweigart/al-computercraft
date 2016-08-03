@@ -1,6 +1,6 @@
 -- Wheat Farmer program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Plants and harvests wheat.
 -- Assumes a field is forward and to
 -- the right of the turtle, with a

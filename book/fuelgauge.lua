@@ -1,6 +1,6 @@
 -- Fuel Gauge program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Displays fuel info nicely.
 
 -- check if server is set to unlimited

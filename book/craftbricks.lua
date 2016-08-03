@@ -1,6 +1,6 @@
 -- Craft Stone Bricks program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Stone brick factory robot, 3 of 3
 
 print('Starting brick crafting program...')

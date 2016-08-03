@@ -1,14 +1,16 @@
 -- Burrower program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Mines a tunnel-shaped burrow.
 
 os.loadAPI('hare')
 
+-- handle command line arguments
 local cliArgs = {...}
 local maxLength = tonumber(cliArgs[1])
 local maxHeight = tonumber(cliArgs[2])
 
+-- display "usage" info
 if maxLength == nil then
   print('Usage: stairminer <length> [height]')
   return
@@ -19,15 +21,17 @@ if maxHeight == nil then
   maxHeight = 3
 end
 
+-- dig the tunnel
 print('Digging burrow...')
-
 local i
 local currentLength = 0
 while currentLength < maxLength do
   print((maxLength - currentLength) .. ' meters left...')
+
   -- fuel check
   if turtle.getFuelLevel() < (maxHeight * 2 + 1) then
-    -- TODO
+    print('ERROR: Not enough fuel to continue.')
+    return
   end
 
   turtle.dig()
@@ -57,8 +61,7 @@ while currentLength < maxLength do
     end
   end
 
-  turtle.turnLeft()
-
+  turtle.turnLeft() -- face forward
   currentLength = currentLength + 1
 end
 

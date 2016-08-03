@@ -1,6 +1,6 @@
 -- Fueling program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Consumes all in inventory fuel.
 
 os.loadAPI('hare')  -- load the hare library

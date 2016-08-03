@@ -1,6 +1,6 @@
 -- Robotic Bakery program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Runs a bakery.
 
 --[[

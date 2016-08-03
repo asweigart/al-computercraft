@@ -1,6 +1,6 @@
 -- Sheep Shearer program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Shears sheep in a field.
 
 

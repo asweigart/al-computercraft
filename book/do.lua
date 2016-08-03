@@ -1,6 +1,6 @@
 -- "Do" program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Does various actions from shell.
 
 function doAction(action)

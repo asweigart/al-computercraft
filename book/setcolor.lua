@@ -1,6 +1,6 @@
 -- Set Color program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Sets the color on the monitor 
 -- behind the turtle.
 

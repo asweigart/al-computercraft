@@ -1,6 +1,6 @@
 -- Furnace Fueler program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Stone brick factory robot, 2 of 3
 
 while true do
