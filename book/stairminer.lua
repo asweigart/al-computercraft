@@ -1,6 +1,6 @@
 -- Stair Miner program
 -- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
+-- turtleappstore.com/AlSweigart
 -- Mines in a stair pattern.
 
 os.loadAPI('hare')
@@ -11,25 +11,25 @@ local maxDepth = tonumber(cliArgs[1])
 
 -- display "usage" info
 if maxDepth == nil or cliArgs[1] == '?' then
-  print('Usage: stairminer <maxDepth>')
+  print('Usage: stairminer <depth>')
   return
 end
 
 -- ensure there is at least some fuel at the start
 if turtle.getFuelLevel() < 50 then
-  print('Load 50 fuel before starting.')
+  print('Please load 50 fuel before starting.')
   return
 end
 
 local i
 local targetDepth = 0
 while true do
-  -- descent mining
+  -- mine while descending
   for i=1,targetDepth do
     -- check for bedrock
     local result, block = turtle.inspectDown()
     if block ~= nil and block['name'] == 'minecraft:bedrock' then
-      print('Hit bedrock. Shutting down.')
+      print('Hit bedrock. Done.')
       return
     end
 
@@ -37,12 +37,17 @@ while true do
     turtle.down()
   end
 
-  -- forward
+  -- check if we're done
+  print('Reached depth of ' .. targetDepth)
+  if targetDepth >= maxDepth then
+    print('Done.')
+    return
+  end
+
+  -- move forward
   turtle.dig()
   turtle.forward()
   turtle.digDown()
-
-  print('Reached depth of ' .. targetDepth)
 
   -- check that there's enough fuel to go up and then reach the bottom again
   if turtle.getFuelLevel() < (targetDepth * 2) then
@@ -55,7 +60,7 @@ while true do
       local slot
       for slot=1,16 do
         if turtle.getItemCount(slot) and turtle.getFuelLevel() < MINIMUM_FUEL then
-          turtle.select()
+          turtle.select(slot)
           turtle.refuel()
         end
       end
@@ -72,20 +77,15 @@ while true do
     end
   end
 
-  -- ascent mining
+  -- mine while ascending
   for i=1,targetDepth do
     turtle.digUp()
     turtle.up()
   end
 
-  -- forward
+  -- move forward
   turtle.dig()
   turtle.forward()
-  
-  targetDepth = targetDepth + 2
 
-  if targetDepth >= maxDepth then
-    print('Reached maximum depth. Shutting down.')
-    return
-  end
+  targetDepth = targetDepth + 2
 end  
