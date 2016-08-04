@@ -1,6 +1,6 @@
 -- Burrower program
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Mines a tunnel-shaped burrow.
 
 os.loadAPI('hare')

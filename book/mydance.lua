@@ -1,6 +1,6 @@
 -- Dance program
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Make the turtle dance!
 
 print('Hold Ctrl+T to stop dancing.')

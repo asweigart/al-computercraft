@@ -1,6 +1,6 @@
 -- Chop Tree program
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Chops down the tree in front of turtle.
 
 if not turtle.detect() then

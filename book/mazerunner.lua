@@ -1,6 +1,6 @@
 -- Maze Running program
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Moves through a maze.
 
 print('Starting to run the maze...')

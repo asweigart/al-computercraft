@@ -1,6 +1,6 @@
 -- "Hare" utility library
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Provides useful utility functions.
 
 hareVersion = "1"

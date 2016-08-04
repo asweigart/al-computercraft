@@ -1,6 +1,6 @@
 -- 3D Printer program
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Prints out 
 
 print('Printing...')

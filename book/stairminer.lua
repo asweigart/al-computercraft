@@ -1,6 +1,6 @@
 -- Stair Miner program
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Mines in a stair pattern.
 
 os.loadAPI('hare')

@@ -1,6 +1,6 @@
 -- Milker program
 -- By Al Sweigart
--- turtleappstore.com/AlSweigart
+-- turtleappstore.com/users/AlSweigart
 -- Milks cows in a field.
 
 os.loadAPI('hare')
