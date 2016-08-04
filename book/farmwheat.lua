@@ -98,7 +98,8 @@ while true do
 
   -- farm wheat
   print('Sweeping field...')
-  hare.sweepField(maxForward, maxRight, checkCrop, storeWheat)
+  hare.sweepField(maxForward, maxRight, checkCrop)
+  storeWheat()
 
   print('Sleeping for 10 minutes...')
   os.sleep(600)

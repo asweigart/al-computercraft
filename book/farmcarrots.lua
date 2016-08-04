@@ -101,7 +101,8 @@ while true do
 
   -- farm carrots
   print('Sweeping field...')
-  hare.sweepField(rowsArg, columnsArg, checkCrop, storeCarrots)
+  hare.sweepField(rowsArg, columnsArg, checkCrop)
+  storeCarrots()
 
   print('Sleeping for 10 minutes...')
   os.sleep(600)
