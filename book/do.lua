@@ -3,7 +3,7 @@
 -- turtleappstore.com/AlSweigart
 -- Does various actions from shell.
 
-function doAction(action)
+function doAction(action, verbose)
   action = string.lower(action)
 
   -- look at these strings for the action codes
@@ -26,10 +26,13 @@ function doAction(action)
   elseif action == 'dd' then
     return turtle.digDown()
   elseif action == 'i' then
+    -- TODO
     return turtle.inspect()
   elseif action == 'iu' then
+    -- TODO
     return turtle.inspectUp()
   elseif action == 'id' then
+    -- TODO
     return turtle.inspectDown()
   elseif action == 's' then
     return turtle.suck()
@@ -75,12 +78,29 @@ function doAction(action)
     return turtle.compareDown()
   elseif action == 'ref' then
     return turtle.refuel()
-  elseif string.sub(action, 0, 3) == 'sel' then
-    local slot = tonumber(string.sub(action, 3, 2))
+  elseif string.sub(action, 1, 3) == 'sel' then
+    local slot = tonumber(string.sub(action, 4, 2))
     return turtle.select(slot)
-  elseif string.sub(action, 0, 4) == 'tran' then
+  elseif string.sub(action, 1, 4) == 'tran' then
     --local from = tonnumber(string.sub())
-    -- TODO - finsih
+    -- TODO - finish
+  elseif action == 'rf' then
+    return redstone.setOutput('front', not redstone.getOutput('front'))
+  elseif action == 'rb' then
+    return redstone.setOutput('back', not redstone.getOutput('back'))
+  elseif action == 'rtop' then
+    return redstone.setOutput('top', not redstone.getOutput('top'))
+  elseif action == 'rbot' then
+    return redstone.setOutput('bottom', not redstone.getOutput('bottom'))
+  elseif action == 'rl' then
+    return redstone.setOutput('left', not redstone.getOutput('left'))
+  elseif action == 'rr' then
+    return redstone.setOutput('right', not redstone.getOutput('right'))
+  elseif string.sub(action, 1, 1) == 'w' then 
+    local waitTime = tonumber(string.sub(action, 2))
+    os.sleep(waitTime)
+    return true
+  
   else
     -- not a recognized action
     return false, 'Not a recognized action.'
@@ -146,7 +166,7 @@ end
 
 -- display "usage" info
 local cliArgs = {...}
-if #cliArgs == 0 then
+if #cliArgs == 0 or cliArgs[1] == '?' then
 	print('Usage: do [actions]')
 	print('See source code for actions.')
 	print('For example: "do l f 3 r b 2" will turn')
