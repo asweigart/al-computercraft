@@ -45,8 +45,7 @@ end
 -- connect to the monitor  
 mon = peripheral.wrap('back')
 if mon == nil then
-  print('ERROR: No monitor behind turtle!')
-  return
+  error('No monitor behind turtle!')
 end
 
 -- set text color

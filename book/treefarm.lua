@@ -7,8 +7,7 @@ os.loadAPI('hare')  -- load the hare library
 
 -- check if choptree program exists
 if not fs.exists('choptree') then
-  print('ERROR: You need the choptree program')
-  print('installed to run this program.')
+  error('You need the choptree program installed to run this program.')
   return
 end
 

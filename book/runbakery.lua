@@ -44,8 +44,7 @@ if hare.findBlock('computercraft:CC-Peripheral') then
   turtleFacing = 'front'
   turtlePosition = 9  
 else
-  print('ERROR: Please position turtle next to')
-  print('the monitor and re-run this program.')  
+  error('Please position turtle next to the monitor and re-run this program.')  
 end
 
 
@@ -54,7 +53,7 @@ end
 -- or 'back' of the bakery.
 local function moveTo(toPosition, toFacing)
   if turtlePosition == nil or turtleFacing == nil then
-    print('ERROR: Don\'t know where turtle is.')
+    error('Don\'t know where turtle is.')
     return false
   end
 

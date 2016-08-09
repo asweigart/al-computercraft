@@ -30,8 +30,7 @@ while currentLength < maxLength do
 
   -- fuel check
   if turtle.getFuelLevel() < (maxHeight * 2 + 1) then
-    print('ERROR: Not enough fuel to continue.')
-    return
+    error('Not enough fuel to continue.')
   end
 
   turtle.dig()

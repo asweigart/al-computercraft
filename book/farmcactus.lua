@@ -55,7 +55,7 @@ end
 
 print('Hold Ctrl+T to stop.')
 if not hare.findBlock('minecraft:chest') then
-  print('ERROR: Must start next to a chest!')
+  error('Must start next to a chest!')
 end
 
 -- face field
@@ -65,7 +65,7 @@ turtle.turnLeft()
 while true do
   -- check fuel
   if turtle.getFuelLevel() < (rowsArg * columnsArg) + rowsArg + columnsArg then
-    print('ERROR: Not enough fuel.')
+    error('Not enough fuel.')
     return
   end
 

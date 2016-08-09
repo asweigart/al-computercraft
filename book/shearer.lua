@@ -35,7 +35,7 @@ end
 function storeWool()
   -- face the chest
   if not hare.findBlock('minecraft:chest') then
-    error('ERROR: Cannot find the wool chest!')
+    error('Cannot find the wool chest!')
   end
 
   -- drop any item that isn't an empty bucket
@@ -59,8 +59,7 @@ print('Hold Ctrl+T to stop.')
 
 -- start by facing the chest
 if not hare.findBlock('minecraft:chest') then
-  print('ERROR: Must start next to a chest!')
-  return
+  error('Must start next to a chest!')
 end
 
 -- face the field
@@ -70,14 +69,12 @@ turtle.turnLeft()
 while true do
   -- check fuel
   if turtle.getFuelLevel() < (rowsArg * columnsArg) + rowsArg + columnsArg then
-    print('ERROR: Not enough fuel.')
-    return
+    error('Not enough fuel.')
   end
 
   -- select the shears
   if not hare.selectItem('minecraft:shears') then
-    print('ERROR: Need shears in inventory.')
-    return
+    error('Need shears in inventory.')
   end
 
   -- find and shear sheep

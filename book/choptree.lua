@@ -4,8 +4,7 @@
 -- Chops down the tree in front of turtle.
 
 if not turtle.detect() then
-  print('ERROR: Could not find tree!')
-  return  -- no tree there, so exit
+  error('Could not find tree!')
 end
 
 print('Chopping tree...')
