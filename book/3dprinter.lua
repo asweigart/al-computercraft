@@ -1,111 +1,118 @@
 -- 3D Printer program
 -- By Al Sweigart
 -- turtleappstore.com/users/AlSweigart
--- Builds based on a blueprint.
+-- Builds based on a blueprint and legend file.
 
---[[ FORMAT OF BLUEPRINT FILES:
-
-
-]]
+os.loadAPI('hare')
 
 -- handle command line arguments
 local cliArgs = {...}
 blueprint = cliArgs[1]
+legend = cliArgs[2]
 
-if blueprint == nil or cliArgs[1] == '?' then
-  print('Usage: 3dprint <blueprint>')
-  print('See source for blueprint file')
+if legend == nil or cliArgs[1] == '?' then
+  print('Usage: 3dprint <blueprint> <legend>')
+  print('See source for blueprint & legend file')
   print('format details.')
   return
 end
 
 if not fs.exists(blueprint) then
-  print('ERROR: ' .. blueprint .. ' file does not exist.')
-  return
+  error(blueprint .. ' file does not exist.')
 end
 
--- read header of the blueprint
-local layers = {}
-local legend = {}
-local fo = fs.open(blueprint, 'r')
-local layerWidth = tonumber(fo.readLine())
-local layerHeight = tonumber(fo.readLine())
-local numLayers = tonumber(fo.readLine())
-
--- read in the legend
-while true do
-  line = fo.readLine()
-  if line == nil then error('Incomplete header!') end
-  if line == '~' then break end  -- ~ marks end of header
-
-  -- in "x=block", x is key and block is value
-  legend[string.sub(line, 1, 1)] = string.sub(line, 3)
+if not fs.exists(legend) then
+  error(legend .. ' file does not exist.')
 end
 
 
-local layerNum
-local lineNum = 1
-for layerNum = 1, numLayers do
-  -- read in a layer
-  local x, y, layer
-  layer = {}
-  for y = 1, layerHeight do
-    line = fo.readLine()
-    if line == nil then error(lineNum .. ': Incomplete layer!') end
-    if #line ~= layerWidth then error(lineNum .. ': Row not long enough!') end
-    if line == '~' then error(lineNum .. ':Not enough rows!') end
-    lineNum = lineNum + 1
+-- read in the legend file
+local legendData = {}
+local legendFile = fs.open(legend, 'r')
 
-    local row = {}
-    for x = 1, #line do
-      table.insert(row, line[x])
+-- read in first line
+print('Legend:')
+local line = legendFile.readLine()
+while line ~= nil do
+  -- remove leading & trailing whitespace
+  line = hare.trim(line)
+  print('LINE', line)
+
+  -- only parse if this line is not blank or a comment
+  if line ~= '' and string.find(line, '--') == nil then
+    local equalPos = string.find(line, '=')
+    
+    -- make sure line is valid
+    if equalPos == nil then
+      error('Missing equal sign: ' + tostring(line))
     end
-    table.insert(layer, row)
+
+    local symbol = string.sub(line, 1, equalPos - 1)
+    local block = string.sub(line, equalPos + 1)
+    legendData[symbol] = block
+    print(symbol, block)
   end
 
-  line = fo.readLine()
-  if line ~= '~' then error(lineNum .. ': Expected ~ at end of layer!') end
-  lineNum = lineNum + 1
-  table.insert(layers, layer)
+  -- read in next line
+  line = legendFile.readLine()
+end
+print()
+
+print('debug: read legend file')
+
+-- validate the blueprint file
+local blueprintFile = fs.open(blueprint, 'r')
+line = blueprintFile.readLine()
+local blueprintWidth = nil
+local blueprintLength = 0
+local i
+while line ~= nil do
+  -- remove leading & trailing whitespace
+  line = hare.trim(line)
+
+  -- only parse if this line is not blank or a comment
+  if line ~= '' and string.find(line, '--') == nil then
+    if blueprintWidth == nil then
+      -- set the width based on the first line
+      blueprintWidth = #line
+    else
+      if #line ~= blueprintWidth then
+        error('Width of line is not ' + tostring(blueprintWidth) + ': ' + line)
+      end
+    end
+
+    -- make sure all symbols exist in legendData
+    for i = 1, blueprintWidth do
+      if legendData[string.sub(line, i, i)] == nil then
+        error('Symbol ' + string.sub(line, i, i) + ' does not exist in legend.')
+      end
+    end
+
+    blueprintLength = blueprintLength + 1
+  end
+  line = blueprintFile.readLine()
 end
 
-fo.close()
+print('debug: validated blueprint')
 
+-- read in the blueprint file
+local blueprintData = {}
+blueprintFile = fs.open(blueprint, 'r')
 
-print('Printing...')
+-- read in first line
+line = blueprintFile.readLine()
 
-while true do
-  print('Collecting...')
-  for k, v in pairs({1,2,3,5,6,7,9,10,11}) do
-    turtle.select(v)
-    turtle.suck()
+while line ~= nil do
+  -- remove leading & trailing whitespace
+  line = hare.trim(line)
+
+  -- only parse if this line is not blank or a comment
+  if line ~= '' and string.find(line, '--') then
+    -- LEFT OFF
   end
 
-  -- face the output barrel
-  turtle.turnLeft()
-  turtle.turnLeft()
-
-  while true do
-    turtle.select(16)
-    turtle.craft(64)
-    print('Crafted.')
-    itemData = turtle.getItemDetail(16)
-    if itemData == nil then break end
-    turtle.drop()
-    print('Deposited.')
-  end
-
-  -- face the resource barrel
-  turtle.turnLeft()
-  turtle.turnLeft()
-
-  -- handle any leftover resources
-  for k, v in pairs({1,2,3,5,6,7,9,10,11}) do
-    turtle.select(v)
-    turtle.drop() -- put it back into the resource barrel
-  end
-
-
-  print('Sleeping...')
-  os.sleep(60)
+  line = blueprintFile.readLine()
 end
+
+    
+    
