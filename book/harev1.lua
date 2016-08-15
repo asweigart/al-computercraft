@@ -18,6 +18,7 @@ end
 -- findItem() returns inventory slot 
 -- that has the named item, or nil if not found
 function findItem(name)
+  assert(type(name) == 'string' and name ~= '')
   local slot, item
 
   -- first try to find an exact name match
@@ -50,8 +51,7 @@ end
 -- slot with the named item, returns
 -- true if found and false if not
 function selectItem(name)
-  -- selects inventory slot that has the named item
-  -- return true if found, false if not found
+  assert(type(name) == 'string' and name ~= '')
   local slot = findItem(name)
 
   if slot ~= nil then

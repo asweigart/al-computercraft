@@ -28,7 +28,7 @@ end
 function checkCrop()
   local result, block = turtle.inspectDown()
 
-  if result == false then
+  if not result then
     turtle.digDown() -- till the soil
     plantVegetable()
   elseif block ~= nil and (block['name'] == 'minecraft:potatoes' or block['name'] == 'minecraft:carrots') and block['metadata'] == 7 then

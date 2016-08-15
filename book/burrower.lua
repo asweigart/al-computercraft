@@ -33,16 +33,16 @@ while currentLength < maxLength do
     error('Not enough fuel to continue.')
   end
 
-  turtle.dig()
+  hare.digUntilClear()
   turtle.forward()
 
   -- ascend and dig left side
   turtle.turnLeft()
   for i=1,maxHeight do
-    turtle.dig()
+    hare.digUntilClear()
     if i ~= maxHeight then
       -- don't dig up at the very top
-      turtle.digUp()
+      hare.digUpUntilClear()
       turtle.up()
     end
   end
@@ -52,10 +52,10 @@ while currentLength < maxLength do
 
   -- descend and dig right side
   for i=1,maxHeight do
-    turtle.dig()
+    hare.digUntilClear()
     if i ~= maxHeight then
       -- don't dig down at the very bottom
-      turtle.digDown()
+      hare.digDownUntilClear()
       turtle.down()
     end
   end

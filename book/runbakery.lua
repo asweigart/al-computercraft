@@ -67,7 +67,7 @@ local function moveTo(toPosition, toFacing)
     end
 
     for i = 1, (toPosition - turtlePosition) do
-      if turtle.forward() == false then
+      if not turtle.forward() then
         error('Movement obstructed.')
       end
     end
@@ -86,7 +86,7 @@ local function moveTo(toPosition, toFacing)
     end
 
     for i = 1, (turtlePosition - toPosition) do
-      if turtle.forward() == false then
+      if not turtle.forward() then
         error('Movement obstructed.')
       end
     end
@@ -141,10 +141,10 @@ local function pickUpIngredient(ingredient, position, facing, slots)
   for index, slot in pairs(slots) do
     -- pick up ingredient
     turtle.select(slot)
-    if turtle.suck(1) == false then
+    if not turtle.suck(1) then
       print('Out of ' .. ingredient .. '!')
       print('Sleeping until chest is refilled...')
-      while turtle.suck(1) == false do
+      while not turtle.suck(1) do
         os.sleep(10)
       end
     end

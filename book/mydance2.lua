@@ -18,7 +18,7 @@ while true do
 
   -- forward/back moves
   if math.random(1, 2) == 1 then
-    if isBack == true then
+    if isBack then
       turtle.forward()
       isBack = false
     else
@@ -29,7 +29,7 @@ while true do
 
   -- up/down moves
   if math.random(1, 2) == 1 then
-    if isUp == true then
+    if isUp then
       turtle.down()
       isUp = false
     else

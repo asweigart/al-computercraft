@@ -18,6 +18,7 @@ end
 -- findItem() returns inventory slot 
 -- that has the named item, or nil if not found
 function findItem(name)
+  assert(type(name) == 'string' and name ~= '')
   local slot, item
 
   -- first try to find an exact name match
@@ -50,8 +51,7 @@ end
 -- slot with the named item, returns
 -- true if found and false if not
 function selectItem(name)
-  -- selects inventory slot that has the named item
-  -- return true if found, false if not found
+  assert(type(name) == 'string' and name ~= '')
   local slot = findItem(name)
 
   if slot ~= nil then
@@ -96,6 +96,7 @@ end
 -- findBlock() spins around searching
 -- for the named block next to the turtle
 function findBlock(name)
+  assert(type(name) == 'string' and name ~= '')
   local foundBlock = false
   local i
   for i = 1, 4 do
@@ -113,10 +114,16 @@ end
 -- and columns of an area in front and
 -- to the right of the turtle, calling
 -- the provided sweepFunc at each point
+-- sweepField() moves across the rows
+-- and columns of an area in front and
+-- to the right of the turtle, calling
+-- the provided sweepFunc at each point
 function sweepField(rows, columns, sweepFunc)
+  assert(type(rows) == 'number' and rows >= 1)
+  assert(type(columns) == 'number' and columns >= 1)
+
   local turnRightNext = true
-  local columnStep = 1
-  local rowStep = 1
+  local columnStep, rowStep
   for columnStep = 1, columns do
     if sweepFunc ~= nil then
       sweepFunc(rowStep, columnStep, rows, columns)
@@ -173,10 +180,11 @@ end
 -- of items with the exact name in the
 -- turtle's inventory
 function countItems(name)
+  assert(type(name) == 'string' and name ~= '')
   local total = 0
   local slot
-  for slot = 1,16 do
-    local item = turtle.getItemDetail(slot)
+  for slot=1,16 do
+    item = turtle.getItemDetail(slot)
     if item ~= nil and item['name'] == name then
       total = total + item['count']
     end
@@ -201,6 +209,8 @@ end
 -- shaped floor out of the blocks in the
 -- inventory
 function buildRectangleFloor(length, width)
+  assert(type(length) == 'number' and length >= 1)
+  assert(type(width) == 'number' and width >= 1)
   if countInventory() < length * width then
     return false, 'Not enough blocks.'  -- not enough blocks
   end
@@ -226,6 +236,8 @@ end
 -- buildWall() creates a wall stretching
 -- in front of the turtle
 function buildWall(length, height)
+  assert(type(length) == 'number' and length >= 1)
+  assert(type(height) == 'number' and height >= 1)
   if countInventory() < length * height then
     return false  -- not enough blocks
   end
@@ -270,6 +282,9 @@ end
 
 -- 
 function buildRoom(length, width, height)
+  assert(type(length) == 'number' and length >= 1)
+  assert(type(width) == 'number' and width >= 1)
+  assert(type(height) == 'number' and height >= 1)
   if countInventory() < ((length * height * height) - ((length - 1) * (height - 1) * height)) then
     return false  -- not enough blocks
   end
@@ -294,6 +309,7 @@ end
 -- inventory, centered on the turtle's
 -- starting position
 function buildCircleFloor(radius)
+  assert(type(radius) == 'number' and radius >= 1)
   -- this is an overestimation of the blocks needed
   local diameter = radius * 2 + 1
   if countInventory() < (diameter * diameter)  then
@@ -332,6 +348,11 @@ end
 -- the turtle if it is within the circle's
 -- radius
 function selectAndPlaceDownInCircle(x, y, length, width)
+  assert(type(x) == 'number' and x >= 1)
+  assert(type(y) == 'number' and y >= 1)
+  assert(type(length) == 'number' and length >= 1)
+  assert(type(width) == 'number' and width >= 1)
+
   local radius = math.floor(length / 2)
   local centerx = math.ceil(length / 2)
   local centery = math.ceil(width / 2)

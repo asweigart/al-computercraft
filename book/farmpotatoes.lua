@@ -28,7 +28,7 @@ end
 function checkCrop()
   local result, block = turtle.inspectDown()
 
-  if result == false then
+  if not result then
     turtle.digDown() -- till the soil
     plantPotato()
   elseif block ~= nil and block['name'] == 'minecraft:potatoes' and block['metadata'] == 7 then
@@ -41,7 +41,7 @@ end
 
 
 function plantPotato()
-  if hare.selectItem('minecraft:potato') == false then
+  if not hare.selectItem('minecraft:potato') then
     print('Warning: Low on potatoes.')
     return false
   elseif turtle.placeDown() then -- plant a potato

@@ -33,7 +33,7 @@ while true do
       return
     end
 
-    turtle.digDown()
+    hare.digDownUntilClear()
     turtle.down()
   end
 
@@ -45,9 +45,9 @@ while true do
   end
 
   -- move forward
-  turtle.dig()
+  hare.digUntilClear()
   turtle.forward()
-  turtle.digDown()
+  hare.digDownUntilClear()
 
   -- check that there's enough fuel to go up and then reach the bottom again
   if turtle.getFuelLevel() < (targetDepth * 2) then
@@ -79,12 +79,12 @@ while true do
 
   -- mine while ascending
   for i=1,targetDepth do
-    turtle.digUp()
+    hare.digUpUntilClear()
     turtle.up()
   end
 
   -- move forward
-  turtle.dig()
+  hare.digUntilClear()
   turtle.forward()
 
   targetDepth = targetDepth + 2

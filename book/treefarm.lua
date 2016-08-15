@@ -14,7 +14,7 @@ end
 local i
 while true do
   -- check inventory for saplings
-  if hare.selectItem('sapling') == false then
+  if not hare.selectItem('sapling') then
     print('Out of saplings.')
     return
   end
@@ -36,7 +36,7 @@ while true do
   end
 
   hare.selectEmptySlot()
-  os.loadAPI('choptree')  -- run choptree
+  shell.run('choptree')  -- run choptree
 
   -- move to and face chest
   turtle.back()

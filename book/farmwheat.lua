@@ -25,7 +25,7 @@ end
 function checkCrop()
   local result, block = turtle.inspectDown()
 
-  if result == false then
+  if not result then
     turtle.digDown()  -- till the soil
     plantSeed()
   elseif block ~= nil and block['name'] == 'minecraft:wheat' and block['metadata'] == 7 then
@@ -40,7 +40,7 @@ end
 -- plantSeed() returns true if a seed
 -- was planted, otherwise false
 function plantSeed()
-  if hare.selectItem('minecraft:wheat_seeds') == false then
+  if not hare.selectItem('minecraft:wheat_seeds') then
     print('Warning: Low on seeds.')
     return false 
   elseif turtle.placeDown() then  -- plant a seed

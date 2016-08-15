@@ -18,6 +18,7 @@ end
 -- findItem() returns inventory slot 
 -- that has the named item, or nil if not found
 function findItem(name)
+  assert(type(name) == 'string' and name ~= '')
   local slot, item
 
   -- first try to find an exact name match
@@ -50,8 +51,7 @@ end
 -- slot with the named item, returns
 -- true if found and false if not
 function selectItem(name)
-  -- selects inventory slot that has the named item
-  -- return true if found, false if not found
+  assert(type(name) == 'string' and name ~= '')
   local slot = findItem(name)
 
   if slot ~= nil then
@@ -96,6 +96,7 @@ end
 -- findBlock() spins around searching
 -- for the named block next to the turtle
 function findBlock(name)
+  assert(type(name) == 'string' and name ~= '')
   local foundBlock = false
   local i
   for i = 1, 4 do
@@ -118,6 +119,9 @@ end
 -- to the right of the turtle, calling
 -- the provided sweepFunc at each point
 function sweepField(rows, columns, sweepFunc)
+  assert(type(rows) == 'number' and rows > 0)
+  assert(type(columns) == 'number' and columns > 0)
+
   local turnRightNext = true
   local columnStep, rowStep
   for columnStep = 1, columns do
@@ -176,6 +180,7 @@ end
 -- of items with the exact name in the
 -- turtle's inventory
 function countItems(name)
+  assert(type(name) == 'string' and name ~= '')
   local total = 0
   local slot
   for slot=1,16 do
