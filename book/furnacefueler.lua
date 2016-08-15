@@ -3,6 +3,8 @@
 -- turtleappstore.com/users/AlSweigart
 -- Stone brick factory robot, 2 of 3
 
+local slot
+
 while true do
   -- get fuel from chest
   while turtle.suckDown() do
@@ -10,7 +12,6 @@ while true do
   end
 
   -- put fuel in furnace
-  local slot
   for slot=1,16 do
     turtle.select(slot)
     if turtle.drop() then

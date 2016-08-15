@@ -12,11 +12,12 @@ in your inventory are called
 ]]
 
 os.loadAPI('hare')
+local cliArgs, rowsArg, columnsArg
 
 -- handle command line arguments
-local cliArgs = {...}
-local rowsArg = tonumber(cliArgs[1])
-local columnsArg = tonumber(cliArgs[2])
+cliArgs = {...}
+rowsArg = tonumber(cliArgs[1])
+columnsArg = tonumber(cliArgs[2])
 
 -- display "usage" info
 if columnsArg == nil or cliArgs[1] == '?' then
@@ -66,18 +67,19 @@ end
 
 
 function storeVegetables()
+  local numToSave, key, vegName, numToDropOff
+
   if not hare.findBlock('minecraft:chest') then -- face the chest
     print('Warning: Could not find chest.')
     return
   end
 
   -- drop vegetables in chest
-  local numToSave = math.ceil((rowsArg * columnsArg) / 2)
-  local key, vegName
+  numToSave = math.ceil((rowsArg * columnsArg) / 2)
   for key, vegName in pairs({'potato', 'carrot'}) do
     while hare.countItems('minecraft:' .. vegName) > numToSave do
       hare.selectItem('minecraft:' .. vegName)
-      local numToDropOff = math.min((hare.countItems('minecraft:' .. vegName) - numToSave), turtle.getItemCount())
+      numToDropOff = math.min((hare.countItems('minecraft:' .. vegName) - numToSave), turtle.getItemCount())
       print('Dropping off ' .. numToDropOff .. ' ' .. vegName .. '...')
       if not turtle.drop(numToDropOff) then
         print('Vegetable chest is full!')

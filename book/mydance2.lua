@@ -3,8 +3,9 @@
 -- turtleappstore.com/users/AlSweigart
 -- Make the turtle dance!
 
-local isUp = false
-local isBack = false
+local i, isUp, isBack
+isUp = false
+isBack = false
 
 print('Hold Ctrl+T to stop dancing.')
 while true do
@@ -40,7 +41,6 @@ while true do
 
   -- spin around
   if math.random(1, 2) == 1 then
-    local i
     for i=1,4 do
       turtle.turnLeft()
     end

@@ -3,9 +3,11 @@
 -- turtleappstore.com/users/AlSweigart
 -- Stone brick factory robot, 3 of 3
 
+local counter
+
 print('Starting brick crafting program...')
 
-local counter = 0
+counter = 0
 while true do
   turtle.select(1)  -- put stone in slot 1
   turtle.suckUp()  -- get stone from furnace

@@ -3,6 +3,8 @@
 -- turtleappstore.com/users/AlSweigart
 -- Does various actions from shell.
 
+local slot, waitTime, cliArgs, actions
+
 function doAction(action, verbose)
   action = string.lower(action)
 
@@ -79,7 +81,7 @@ function doAction(action, verbose)
   elseif action == 'ref' then
     return turtle.refuel()
   elseif string.sub(action, 1, 3) == 'sel' then
-    local slot = tonumber(string.sub(action, 4, 2))
+    slot = tonumber(string.sub(action, 4, 2))
     return turtle.select(slot)
   elseif string.sub(action, 1, 4) == 'tran' then
     --local from = tonnumber(string.sub())
@@ -97,7 +99,7 @@ function doAction(action, verbose)
   elseif action == 'rr' then
     return redstone.setOutput('right', not redstone.getOutput('right'))
   elseif string.sub(action, 1, 1) == 'w' then 
-    local waitTime = tonumber(string.sub(action, 2))
+    waitTime = tonumber(string.sub(action, 2))
     os.sleep(waitTime)
     return true
   
@@ -111,8 +113,9 @@ end
 function split(str)
   -- splits a string into an array of strings
   -- Example: 'a b c' -> {'a', 'b', 'c'}
-  local result = {}
-  local word
+  local result, word
+
+  result = {}
   -- Note: The gmatch() function is
   -- beyond the scope of this book.
   for word in str:gmatch("%w+") do 
@@ -165,7 +168,7 @@ end
 
 
 -- display "usage" info
-local cliArgs = {...}
+cliArgs = {...}
 if #cliArgs == 0 or cliArgs[1] == '?' then
 	print('Usage: do [actions]')
 	print('See source code for actions.')
@@ -176,5 +179,5 @@ if #cliArgs == 0 or cliArgs[1] == '?' then
 	return
 end
 
-local actions = table.concat(cliArgs, ' ')
+actions = table.concat(cliArgs, ' ')
 print(doActions(actions))

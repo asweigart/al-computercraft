@@ -4,11 +4,12 @@
 -- Mines a tunnel-shaped burrow.
 
 os.loadAPI('hare')
+local cliArgs, maxLength, maxHeight, i, currentLength
 
 -- handle command line arguments
-local cliArgs = {...}
-local maxLength = tonumber(cliArgs[1])
-local maxHeight = tonumber(cliArgs[2])
+cliArgs = {...}
+maxLength = tonumber(cliArgs[1])
+maxHeight = tonumber(cliArgs[2])
 
 -- display "usage" info
 if maxLength == nil then
@@ -23,8 +24,7 @@ end
 
 -- dig the tunnel
 print('Digging burrow...')
-local i
-local currentLength = 0
+currentLength = 0
 while currentLength < maxLength do
   print((maxLength - currentLength) .. ' meters left...')
 

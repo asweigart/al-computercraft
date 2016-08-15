@@ -7,11 +7,12 @@
 -- chest behind it.
 
 os.loadAPI('hare')
+local cliArgs, maxForward, maxRight
 
 -- handle command line arguments
-local cliArgs = {...}
-local maxForward = tonumber(cliArgs[1])
-local maxRight = tonumber(cliArgs[2])
+cliArgs = {...}
+maxForward = tonumber(cliArgs[1])
+maxRight = tonumber(cliArgs[2])
 
 -- display "usage" info
 if maxRight == nil or cliArgs[1] == '?' then

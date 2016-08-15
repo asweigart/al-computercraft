@@ -3,6 +3,8 @@
 -- turtleappstore.com/users/AlSweigart
 -- Displays fuel info nicely.
 
+local amt, spaceLeft
+
 -- check if server is set to unlimited
 if turtle.getFuelLimit() == 'unlimited' then
   print('Unlimited fuel mode is enabled.')
@@ -16,9 +18,9 @@ io.write(turtle.getFuelLimit())
 io.write('    ')
 
 -- display fuel percentage
-local amt = 100 * turtle.getFuelLevel() / turtle.getFuelLimit()
+amt = 100 * turtle.getFuelLevel() / turtle.getFuelLimit()
 print(amt .. '%')
 
 -- display space left
-local spaceLeft = turtle.getFuelLimit() - turtle.getFuelLevel()
+spaceLeft = turtle.getFuelLimit() - turtle.getFuelLevel()
 print('Space left: ' .. spaceLeft)
