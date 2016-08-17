@@ -3,8 +3,8 @@
 -- turtleappstore.com/users/AlSweigart
 -- Make the turtle dance!
 
-print('Hold Ctrl+T to stop dancing.')
-while true do
+print('Hello world!')
+for i = 1, 10 do
   -- turn based on random number
   if math.random(1, 2) == 1 then
   	print('Turn to the left!')

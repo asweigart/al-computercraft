@@ -11,7 +11,6 @@ if not fs.exists('choptree') then
   return
 end
 
-local i
 while true do
   -- check inventory for saplings
   if not hare.selectItem('sapling') then

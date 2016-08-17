@@ -7,7 +7,6 @@
 -- chest behind it.
 
 os.loadAPI('hare')
-local cliArgs, maxForward, maxRight
 
 -- handle command line arguments
 cliArgs = {...}
@@ -24,7 +23,7 @@ end
 -- checkCrop() harvests mature wheat
 -- and plants seeds
 function checkCrop()
-  local result, block = turtle.inspectDown()
+  result, block = turtle.inspectDown()
 
   if not result then
     turtle.digDown()  -- till the soil

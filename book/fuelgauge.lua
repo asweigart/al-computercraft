@@ -3,8 +3,6 @@
 -- turtleappstore.com/users/AlSweigart
 -- Displays fuel info nicely.
 
-local amt, spaceLeft
-
 -- check if server is set to unlimited
 if turtle.getFuelLimit() == 'unlimited' then
   print('Unlimited fuel mode is enabled.')

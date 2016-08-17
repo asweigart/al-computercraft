@@ -4,10 +4,9 @@
 -- Consumes all in inventory fuel.
 
 os.loadAPI('hare')  -- load the hare library
-local slot, fuelType, fuelAmount
 
 -- keys=fuel name, values=fuel amount
-local FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
+FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
 
 -- check if server is set to unlimited
 if turtle.getFuelLimit() == 'unlimited' then

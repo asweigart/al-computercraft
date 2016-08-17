@@ -3,7 +3,6 @@
 -- turtleappstore.com/users/AlSweigart
 -- Make the turtle dance!
 
-local isUp, isBack, randomNum
 isUp = false
 isBack = false
 

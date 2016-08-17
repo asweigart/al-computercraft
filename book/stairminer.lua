@@ -4,7 +4,6 @@
 -- Mines in a stair pattern.
 
 os.loadAPI('hare')
-local MINIMUM_FUEL, cliArgs, maxDepth, i, targetDepth, result, block, slot
 
 MINIMUM_FUEL = 500 -- stops refueling after reaching this minimum
 

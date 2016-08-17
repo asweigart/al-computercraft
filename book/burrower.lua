@@ -4,7 +4,6 @@
 -- Mines a tunnel-shaped burrow.
 
 os.loadAPI('hare')
-local cliArgs, maxLength, maxHeight, i, currentLength
 
 -- handle command line arguments
 cliArgs = {...}

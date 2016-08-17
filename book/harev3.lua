@@ -19,8 +19,7 @@ end
 -- that has the named item, or nil if not found
 function findItem(name)
   assert(type(name) == 'string' and name ~= '')
-  local slot, item
-
+  
   -- first try to find an exact name match
   for slot = 1, 16 do
     item = turtle.getItemDetail(slot)
@@ -52,7 +51,7 @@ end
 -- true if found and false if not
 function selectItem(name)
   assert(type(name) == 'string' and name ~= '')
-  local slot = findItem(name)
+  slot = findItem(name)
 
   if slot ~= nil then
     turtle.select(slot)
@@ -68,7 +67,6 @@ end
 -- if found, returns nil if no empty spaces
 function findEmptySlot()
   -- loop through all slots
-  local slot
   for slot = 1, 16 do  
     if turtle.getItemCount(slot) == 0 then
       return slot
@@ -83,7 +81,7 @@ end
 -- found, false if no empty spaces
 function selectEmptySlot()
   -- loop through all slots
-  local slot = findEmptySlot()
+  slot = findEmptySlot()
   if slot ~= nil then
     turtle.select(slot)
     return true
@@ -97,10 +95,9 @@ end
 -- for the named block next to the turtle
 function findBlock(name)
   assert(type(name) == 'string' and name ~= '')
-  local foundBlock = false
-  local i
+  foundBlock = false
   for i = 1, 4 do
-    local result, block = turtle.inspect()
+    result, block = turtle.inspect()
     if block ~= nil and block['name'] == name then
       return true
     end
@@ -122,8 +119,7 @@ function sweepField(rows, columns, sweepFunc)
   assert(type(rows) == 'number' and rows >= 1)
   assert(type(columns) == 'number' and columns >= 1)
 
-  local turnRightNext = true
-  local columnStep, rowStep
+  turnRightNext = true
   for columnStep = 1, columns do
     if sweepFunc ~= nil then
       sweepFunc(rowStep, columnStep, rows, columns)
@@ -181,8 +177,7 @@ end
 -- turtle's inventory
 function countItems(name)
   assert(type(name) == 'string' and name ~= '')
-  local total = 0
-  local slot
+  total = 0
   for slot=1,16 do
     item = turtle.getItemDetail(slot)
     if item ~= nil and item['name'] == name then
@@ -196,8 +191,7 @@ end
 -- countInventory() returns the total
 -- number of items in the inventory
 function countInventory()
-  local total = 0
-  local slot
+  total = 0
   for slot = 1, 16 do
     total = total + turtle.getItemCount(slot)
   end
@@ -222,7 +216,6 @@ end
 -- selectAndPlaceDown() selects a nonempty
 -- slot and places it under the turtle
 function selectAndPlaceDown()
-  local slot
   for slot = 1, 16 do
     if turtle.getItemCount(slot) > 0 then
       turtle.select(slot)
@@ -244,8 +237,7 @@ function buildWall(length, height)
 
   turtle.up()
 
-  local currentHeight, currentLength
-  local movingForward = true
+  movingForward = true
   for currentHeight = 1, height do
     for currentLength = 1, length do
       selectAndPlaceDown() -- place the block
@@ -262,7 +254,6 @@ function buildWall(length, height)
   end
 
   -- done building wall, move to end position
-  local i
   if movingForward then
     -- turtle near the start position
     for i = 1, length do
@@ -311,13 +302,12 @@ end
 function buildCircleFloor(radius)
   assert(type(radius) == 'number' and radius >= 1)
   -- this is an overestimation of the blocks needed
-  local diameter = radius * 2 + 1
+  diameter = radius * 2 + 1
   if countInventory() < (diameter * diameter)  then
     return false, 'Not enough blocks.'  -- not enough blocks
   end
 
   -- move to start of sweep area
-  local i
   turtle.up()
   turtle.turnLeft()
   for i = 1, math.floor(radius) do
@@ -353,12 +343,12 @@ function selectAndPlaceDownInCircle(x, y, length, width)
   assert(type(length) == 'number' and length >= 1)
   assert(type(width) == 'number' and width >= 1)
 
-  local radius = math.floor(length / 2)
-  local centerx = math.ceil(length / 2)
-  local centery = math.ceil(width / 2)
+  radius = math.floor(length / 2)
+  centerx = math.ceil(length / 2)
+  centery = math.ceil(width / 2)
   
-  local xdistance = centerx - x
-  local ydistance = centery - y
+  xdistance = centerx - x
+  ydistance = centery - y
 
   if (math.sqrt(xdistance * xdistance + ydistance * ydistance) < radius) then
     selectAndPlaceDown()

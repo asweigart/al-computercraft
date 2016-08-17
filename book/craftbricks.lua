@@ -3,8 +3,6 @@
 -- turtleappstore.com/users/AlSweigart
 -- Stone brick factory robot, 3 of 3
 
-local counter
-
 print('Starting brick crafting program...')
 
 counter = 0

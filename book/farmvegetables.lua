@@ -12,7 +12,6 @@ in your inventory are called
 ]]
 
 os.loadAPI('hare')
-local cliArgs, rowsArg, columnsArg
 
 -- handle command line arguments
 cliArgs = {...}
@@ -27,7 +26,7 @@ end
 
 
 function checkCrop()
-  local result, block = turtle.inspectDown()
+  result, block = turtle.inspectDown()
 
   if not result then
     turtle.digDown() -- till the soil
@@ -43,7 +42,7 @@ end
 
 function plantVegetable()
   -- TODO: This code means we'll have to explain short-circuiting. Do we want this?
-  local haveVegetable = false
+  haveVegetable = false
   if math.random(1, 2) == 1 then
     haveVegetable = hare.selectItem('minecraft:potato')
     haveVegetable = hare.selectItem('minecraft:carrot')
@@ -67,8 +66,6 @@ end
 
 
 function storeVegetables()
-  local numToSave, key, vegName, numToDropOff
-
   if not hare.findBlock('minecraft:chest') then -- face the chest
     print('Warning: Could not find chest.')
     return

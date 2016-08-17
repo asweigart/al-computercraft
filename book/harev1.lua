@@ -19,8 +19,7 @@ end
 -- that has the named item, or nil if not found
 function findItem(name)
   assert(type(name) == 'string' and name ~= '')
-  local slot, item
-
+  
   -- first try to find an exact name match
   for slot = 1, 16 do
     item = turtle.getItemDetail(slot)
@@ -52,7 +51,7 @@ end
 -- true if found and false if not
 function selectItem(name)
   assert(type(name) == 'string' and name ~= '')
-  local slot = findItem(name)
+  slot = findItem(name)
 
   if slot ~= nil then
     turtle.select(slot)
@@ -68,7 +67,6 @@ end
 -- if found, returns nil if no empty spaces
 function findEmptySlot()
   -- loop through all slots
-  local slot
   for slot = 1, 16 do  
     if turtle.getItemCount(slot) == 0 then
       return slot
@@ -83,7 +81,7 @@ end
 -- found, false if no empty spaces
 function selectEmptySlot()
   -- loop through all slots
-  local slot = findEmptySlot()
+  slot = findEmptySlot()
   if slot ~= nil then
     turtle.select(slot)
     return true
