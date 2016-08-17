@@ -3,22 +3,24 @@
 -- turtleappstore.com/users/AlSweigart
 -- Make the turtle dance!
 
-local i, isUp, isBack
+local isUp, isBack, randomNum
 isUp = false
 isBack = false
 
 print('Hold Ctrl+T to stop dancing.')
 while true do
-  -- turn moves
-  if math.random(1, 2) == 1 then
-    turtle.turnLeft()
-  end
-  if math.random(1, 2) == 1 then
-    turtle.turnRight()
-  end
+  randomNum = math.random(1, 4)
 
-  -- forward/back moves
-  if math.random(1, 2) == 1 then
+  if randomNum == 1 then
+    -- turn moves
+    if math.random(1, 2) == 1 then
+      turtle.turnLeft()
+    else
+      turtle.turnRight()
+    end
+
+  elseif randomNum == 2 then
+    -- forward/back moves
     if isBack then
       turtle.forward()
       isBack = false
@@ -26,10 +28,9 @@ while true do
       turtle.back()
       isBack = true
     end
-  end
 
-  -- up/down moves
-  if math.random(1, 2) == 1 then
+  elseif randomNum == 3 then
+    -- up/down moves
     if isUp then
       turtle.down()
       isUp = false
@@ -37,15 +38,11 @@ while true do
       turtle.up()
       isUp = true
     end
-  end
 
-  -- spin around
-  if math.random(1, 2) == 1 then
+  elseif randomNum == 4 then
+    -- spin around
     for i=1,4 do
       turtle.turnLeft()
-    end
-    for i=1,4 do
-      turtle.turnRight()
     end
   end
 end

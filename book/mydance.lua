@@ -8,8 +8,7 @@ while true do
   -- turn based on random number
   if math.random(1, 2) == 1 then
     turtle.turnLeft()
-  end
-  if math.random(1, 2) == 1 then
+  else
     turtle.turnRight()
   end
 end
