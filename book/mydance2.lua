@@ -8,19 +8,19 @@ isBack = false
 
 print('Hold Ctrl+T to stop dancing.')
 while true do
-  randomNum = math.random(1, 5)
+  moveType = math.random(1, 5)
 
-  if randomNum == 1 then
+  if moveType == 1 then
     -- turn left
     print('Turn to the left!')
     turtle.turnLeft()
 
-  elseif randomNum == 2 then
+  elseif moveType == 2 then
     -- turn right
     print('Turn to the right!')
     turtle.turnRight()
 
-  elseif randomNum == 3 then
+  elseif moveType == 3 then
     -- forward/back moves
     if isBack then
       print('Move forward!')
@@ -32,7 +32,7 @@ while true do
       isBack = true
     end
 
-  elseif randomNum == 4 then
+  elseif moveType == 4 then
     -- up/down moves
     if isUp then
       print('Get up!')
@@ -44,7 +44,7 @@ while true do
       isUp = true
     end
 
-  elseif randomNum == 5 then
+  elseif moveType == 5 then
     -- spin around
     print('Spin!')
     for i = 1, 4 do

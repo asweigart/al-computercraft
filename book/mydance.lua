@@ -4,7 +4,7 @@
 -- Make the turtle dance!
 
 print('Hello world!')
-for i = 1, 10 do
+for i = 1, 8 do
   -- turn based on random number
   if math.random(1, 2) == 1 then
   	print('Turn to the left!')
@@ -14,3 +14,4 @@ for i = 1, 10 do
     turtle.turnRight()
   end
 end
+print('Done.')
