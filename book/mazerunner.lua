@@ -1,7 +1,7 @@
--- Maze Running program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Moves through a maze.
+--[[ Maze Running program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Moves through a maze. ]]
 
 print('Starting to run the maze...')
 

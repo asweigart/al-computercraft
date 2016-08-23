@@ -1,7 +1,7 @@
--- Milker program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Milks cows in a field.
+--[[ Milker program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Milks cows in a field. ]]
 
 os.loadAPI('hare')
 

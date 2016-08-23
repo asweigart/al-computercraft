@@ -1,7 +1,7 @@
--- Stair Builder program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Builds stairs. Use with stair miner.
+--[[ Stair Builder program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Builds stairs. Use with stair miner. ]]
 
 os.loadAPI('hare')
 

@@ -1,7 +1,7 @@
--- Farm Potatoes program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Automatically farms potatoes.
+--[[ Farm Potatoes program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Automatically farms potatoes. ]]
 
 --[[
 IMPORTANT NOTE!!!

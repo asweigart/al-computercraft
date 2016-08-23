@@ -1,7 +1,7 @@
--- Cake Smash program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Uses a piston to smash a cake!
+--[[ Cake Smash program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Uses a piston to smash a cake! ]]
 
 -- do a count down
 local countdown = 5

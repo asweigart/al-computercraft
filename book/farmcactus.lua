@@ -1,7 +1,7 @@
--- Farm Cactus program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Automatically farms cacti.
+--[[ Farm Cactus program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Automatically farms cacti. ]]
 
 os.loadAPI('hare')
 

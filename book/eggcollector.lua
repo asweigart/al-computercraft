@@ -1,10 +1,10 @@
--- Egg Collector program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Collects eggs in a field.
--- Assumes a field is forward and to
--- the right of the turtle, with a
--- chest behind it.
+--[[ Egg Collector program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Collects eggs in a field.
+Assumes a field is forward and to
+the right of the turtle, with a
+chest behind it. ]]
 
 os.loadAPI('hare')
 

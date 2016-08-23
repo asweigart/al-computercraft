@@ -1,7 +1,7 @@
--- Farm Vegtables program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Automatically farms carrots or potatoes.
+--[[ Farm Vegtables program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Automatically farms carrots or potatoes. ]]
 
 --[[
 IMPORTANT NOTE!!!

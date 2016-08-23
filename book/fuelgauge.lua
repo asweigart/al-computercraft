@@ -1,7 +1,7 @@
--- Fuel Gauge program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Displays fuel info nicely.
+--[[ Fuel Gauge program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Displays fuel info nicely. ]]
 
 -- check if server is set to unlimited
 if turtle.getFuelLimit() == 'unlimited' then

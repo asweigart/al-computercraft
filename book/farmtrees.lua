@@ -1,7 +1,7 @@
--- Tree Farming program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Plants tree then cuts it down.
+--[[ Tree Farming program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Plants tree then cuts it down. ]]
 
 os.loadAPI('hare')  -- load the hare library
 

@@ -1,7 +1,7 @@
--- Sheep Shearer program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Shears sheep in a field.
+--[[ Sheep Shearer program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Shears sheep in a field. ]]
 
 
 os.loadAPI('hare')

@@ -1,7 +1,7 @@
--- "Hare" utility library
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Provides useful utility functions.
+--[[ "Hare" utility library
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Provides useful utility functions. ]]
 
 hareVersion = "2"
 
@@ -91,22 +91,6 @@ function selectEmptySlot()
 end
 
 
--- findBlock() spins around searching
--- for the named block next to the turtle
-function findBlock(name)
-  assert(type(name) == 'string' and name ~= '')
-  foundBlock = false
-  for i = 1, 4 do
-    result, block = turtle.inspect()
-    if block ~= nil and block['name'] == name then
-      return true
-    end
-    turtle.turnRight()
-  end
-  return false
-end
-
-
 -- sweepField() moves across the rows
 -- and columns of an area in front and
 -- to the right of the turtle, calling
@@ -116,8 +100,8 @@ end
 -- to the right of the turtle, calling
 -- the provided sweepFunc at each point
 function sweepField(rows, columns, sweepFunc)
-  assert(type(rows) == 'number' and rows > 0)
-  assert(type(columns) == 'number' and columns > 0)
+  assert(type(rows) == 'number' and rows >= 1)
+  assert(type(columns) == 'number' and columns >= 1)
 
   turnRightNext = true
   for columnStep = 1, columns do
@@ -172,17 +156,98 @@ function sweepField(rows, columns, sweepFunc)
 end
 
 
--- countItems() returns the total number
--- of items with the exact name in the
--- turtle's inventory
-function countItems(name)
-  assert(type(name) == 'string' and name ~= '')
-  total = 0
-  for slot=1,16 do
-    item = turtle.getItemDetail(slot)
-    if item ~= nil and item['name'] == name then
-      total = total + item['count']
+-- buildRectangleFloor() builds a rectangle
+-- shaped floor out of the blocks in the
+-- inventory
+function buildRectangleFloor(length, width)
+  assert(type(length) == 'number' and length >= 1)
+  assert(type(width) == 'number' and width >= 1)
+  if countInventory() < length * width then
+    return false, 'Not enough blocks.'  -- not enough blocks
+  end
+  turtle.up()
+  sweepField(length, width, selectAndPlaceDown)
+end
+
+
+-- selectAndPlaceDown() selects a nonempty
+-- slot and places it under the turtle
+function selectAndPlaceDown()
+  for slot = 1, 16 do
+    if turtle.getItemCount(slot) > 0 then
+      turtle.select(slot)
+      turtle.placeDown()
+      break
     end
   end
-  return total
+end
+
+
+-- buildWall() creates a wall stretching
+-- in front of the turtle
+function buildWall(length, height)
+  assert(type(length) == 'number' and length >= 1)
+  assert(type(height) == 'number' and height >= 1)
+  if countInventory() < length * height then
+    return false  -- not enough blocks
+  end
+
+  turtle.up()
+
+  movingForward = true
+  for currentHeight = 1, height do
+    for currentLength = 1, length do
+      selectAndPlaceDown() -- place the block
+      if movingForward and currentLength ~= length then
+        turtle.forward()
+      elseif not movingForward and currentLength ~= length then
+        turtle.back()
+      end
+    end
+    if currentHeight ~= height then
+      turtle.up()
+    end
+    movingForward = not movingForward
+  end
+
+  -- done building wall, move to end position
+  if movingForward then
+    -- turtle near the start position
+    for i = 1, length do
+      turtle.forward()
+    end
+  else
+    -- turtle near the end position
+    turtle.forward()
+  end
+
+  -- move down to the ground
+  for i = 1, height do
+    turtle.down()
+  end
+end
+
+
+-- buildRoom() constructs four walls
+-- and a ceiling
+function buildRoom(length, width, height)
+  assert(type(length) == 'number' and length >= 1)
+  assert(type(width) == 'number' and width >= 1)
+  assert(type(height) == 'number' and height >= 1)
+  if countInventory() < ((length * height * height) - ((length - 1) * (height - 1) * height)) then
+    return false  -- not enough blocks
+  end
+
+  -- build the four walls
+  buildWall(length - 1, height)
+  turtle.turnRight()
+
+  buildWall(width - 1, height)
+  turtle.turnRight()
+  
+  buildWall(length - 1, height)
+  turtle.turnRight()
+  
+  buildWall(width - 1, height)
+  turtle.turnRight()
 end

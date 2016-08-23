@@ -1,7 +1,7 @@
--- Farm Sugar Cane program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Automatically farms sugar cane.
+--[[ Farm Sugar Cane program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+ Automatically farms sugar cane. ]]
 
 -- NOTE: Sugar cane has the name minecraft:reeds
 

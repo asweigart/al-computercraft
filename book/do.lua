@@ -1,7 +1,7 @@
--- "Do" program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Does various actions from shell.
+--[[ "Do" program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Does various actions from shell. ]]
 
 local slot, waitTime, cliArgs, actions
 

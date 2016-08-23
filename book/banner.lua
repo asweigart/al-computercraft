@@ -1,8 +1,8 @@
--- Banner program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Displays a scrolling banner on the
--- monitor behind the turtle.
+--[[ Banner program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Displays a scrolling banner on the
+monitor behind the turtle. ]]
 
 -- handle command line arguments
 local cliArgs = {...}

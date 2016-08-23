@@ -1,7 +1,7 @@
--- Dance program, version 2
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Make the turtle dance!
+--[[ Dance program, version 2
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Make the turtle dance! ]]
 
 isUp = false
 isBack = false

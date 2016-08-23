@@ -1,7 +1,7 @@
--- Chop Tree program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Chops down the tree in front of turtle.
+--[[ Chop Tree program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Chops down the tree in front of turtle. ]]
 
 if not turtle.detect() then
   error('Could not find tree!')

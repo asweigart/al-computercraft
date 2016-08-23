@@ -1,7 +1,7 @@
--- Stair Miner program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Mines in a stair pattern.
+--[[ Stair Miner program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Mines in a stair pattern. ]]
 
 os.loadAPI('hare')
 

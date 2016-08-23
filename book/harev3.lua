@@ -1,7 +1,7 @@
--- "Hare" utility library
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Provides useful utility functions.
+--[[ "Hare" utility library
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Provides useful utility functions. ]]
 
 hareVersion = "3"
 
@@ -91,22 +91,6 @@ function selectEmptySlot()
 end
 
 
--- findBlock() spins around searching
--- for the named block next to the turtle
-function findBlock(name)
-  assert(type(name) == 'string' and name ~= '')
-  foundBlock = false
-  for i = 1, 4 do
-    result, block = turtle.inspect()
-    if block ~= nil and block['name'] == name then
-      return true
-    end
-    turtle.turnRight()
-  end
-  return false
-end
-
-
 -- sweepField() moves across the rows
 -- and columns of an area in front and
 -- to the right of the turtle, calling
@@ -169,33 +153,6 @@ function sweepField(rows, columns, sweepFunc)
   turtle.turnRight()
 
   return true
-end
-
-
--- countItems() returns the total number
--- of items with the exact name in the
--- turtle's inventory
-function countItems(name)
-  assert(type(name) == 'string' and name ~= '')
-  total = 0
-  for slot=1,16 do
-    item = turtle.getItemDetail(slot)
-    if item ~= nil and item['name'] == name then
-      total = total + item['count']
-    end
-  end
-  return total
-end
-
-
--- countInventory() returns the total
--- number of items in the inventory
-function countInventory()
-  total = 0
-  for slot = 1, 16 do
-    total = total + turtle.getItemCount(slot)
-  end
-  return total
 end
 
 
@@ -271,7 +228,8 @@ function buildWall(length, height)
 end
 
 
--- 
+-- buildRoom() constructs four walls
+-- and a ceiling
 function buildRoom(length, width, height)
   assert(type(length) == 'number' and length >= 1)
   assert(type(width) == 'number' and width >= 1)
@@ -295,65 +253,44 @@ function buildRoom(length, width, height)
 end
 
 
--- buildCircleFloor() builds a circle
--- shaped floor out of the blocks in the
--- inventory, centered on the turtle's
--- starting position
-function buildCircleFloor(radius)
-  assert(type(radius) == 'number' and radius >= 1)
-  -- this is an overestimation of the blocks needed
-  diameter = radius * 2 + 1
-  if countInventory() < (diameter * diameter)  then
-    return false, 'Not enough blocks.'  -- not enough blocks
+-- findBlock() spins around searching
+-- for the named block next to the turtle
+function findBlock(name)
+  assert(type(name) == 'string' and name ~= '')
+  foundBlock = false
+  for i = 1, 4 do
+    result, block = turtle.inspect()
+    if block ~= nil and block['name'] == name then
+      return true
+    end
+    turtle.turnRight()
   end
-
-  -- move to start of sweep area
-  turtle.up()
-  turtle.turnLeft()
-  for i = 1, math.floor(radius) do
-    turtle.forward()
-  end
-  turtle.turnRight()
-  for i = 1, math.floor(radius) do
-    turtle.back()
-  end
-
-  -- place blocks
-  sweepField(radius * 2 + 1, radius * 2 + 1, selectAndPlaceDownInCircle)
-
-  -- move back to center
-  for i = 1, math.floor(radius) do
-    turtle.forward()
-  end
-  turtle.turnRight()
-  for i = 1, math.floor(radius) do
-    turtle.forward()
-  end
-  turtle.turnLeft()
+  return false
 end
 
 
--- selectAndPlaceDownInCircle() selects 
--- a nonempty slot and places it under 
--- the turtle if it is within the circle's
--- radius
-function selectAndPlaceDownInCircle(x, y, length, width)
-  assert(type(x) == 'number' and x >= 1)
-  assert(type(y) == 'number' and y >= 1)
-  assert(type(length) == 'number' and length >= 1)
-  assert(type(width) == 'number' and width >= 1)
-
-  radius = math.floor(length / 2)
-  centerx = math.ceil(length / 2)
-  centery = math.ceil(width / 2)
-  
-  xdistance = centerx - x
-  ydistance = centery - y
-
-  if (math.sqrt(xdistance * xdistance + ydistance * ydistance) < radius) then
-    selectAndPlaceDown()
-      print(x, y, length, width, 'yes')
-  else
-      print(x, y, length, width, 'no')
+-- countItems() returns the total number
+-- of items with the exact name in the
+-- turtle's inventory
+function countItems(name)
+  assert(type(name) == 'string' and name ~= '')
+  total = 0
+  for slot=1,16 do
+    item = turtle.getItemDetail(slot)
+    if item ~= nil and item['name'] == name then
+      total = total + item['count']
+    end
   end
+  return total
+end
+
+
+-- countInventory() returns the total
+-- number of items in the inventory
+function countInventory()
+  total = 0
+  for slot = 1, 16 do
+    total = total + turtle.getItemCount(slot)
+  end
+  return total
 end

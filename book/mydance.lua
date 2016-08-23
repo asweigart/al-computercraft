@@ -1,7 +1,7 @@
--- Dance program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Make the turtle dance!
+--[[ Dance program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Make the turtle dance! ]]
 
 print('Hello world!')
 for i = 1, 8 do

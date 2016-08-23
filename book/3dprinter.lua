@@ -1,7 +1,7 @@
--- 3D Printer program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Builds based on a blueprint and legend file.
+--[[ 3D Printer program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Builds based on a blueprint and legend file. ]]
 
 os.loadAPI('hare')
 

@@ -1,8 +1,8 @@
--- Set Color program
--- By Al Sweigart
--- turtleappstore.com/users/AlSweigart
--- Sets the color on the monitor 
--- behind the turtle.
+--[[ Set Color program
+By Al Sweigart
+turtleappstore.com/users/AlSweigart
+Sets the color on the monitor 
+behind the turtle. ]]
 
 -- handle command line arguments
 local cliArgs = {...}
