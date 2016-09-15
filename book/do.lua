@@ -1,4 +1,4 @@
---[[ "Do" program
+--[[ "Act" program
 By Al Sweigart
 turtleappstore.com/users/AlSweigart
 Does various actions from shell. ]]
@@ -166,18 +166,20 @@ function doActions(actions)
   return 'ok' -- all actions done
 end
 
+d = doActions
+
 
 -- display "usage" info
 cliArgs = {...}
-if #cliArgs == 0 or cliArgs[1] == '?' then
-	print('Usage: do [actions]')
+if cliArgs[1] == '?' then
+	print('Usage: act [actions]')
 	print('See source code for actions.')
-	print('For example: "do l f 3 r b 2" will turn')
+	print('Example: "act l f 3 r b 2" will turn')
 	print('left, go forward 3 times, turn right,')
 	print('then move back 2 times.')
 
 	return
+elseif #cliArgs ~= 0 then
+  actions = table.concat(cliArgs, ' ')
+  print(doActions(actions))
 end
-
-actions = table.concat(cliArgs, ' ')
-print(doActions(actions))

@@ -71,9 +71,9 @@ while true do
     print('Inventory full.')
     print('Sleeping until inventory is unloaded...')
 
-    while hare.findEmptySlot() == nil do
+    repeat
       os.sleep(10)
-    end
+    until hare.findEmptySlot() ~= nil
   end
 
   -- mine while ascending
