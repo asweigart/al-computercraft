@@ -4,14 +4,18 @@ turtleappstore.com/users/AlSweigart
 Make the turtle dance! ]]
 
 print('Hello world!')
-for i = 1, 8 do
-  -- turn based on random number
-  if math.random(1, 2) == 1 then
-  	print('Turn to the left!')
-    turtle.turnLeft()
-  else
-  	print('Turn to the right!')
-    turtle.turnRight()
-  end
+turtle.forward()
+turtle.back()
+turtle.turnRight()
+turtle.forward()
+turtle.back()
+turtle.back()
+turtle.turnLeft()
+turtle.turnLeft()
+turtle.back()
+for i = 1, 5 do
+  turtle.turnRight()
 end
+turtle.up()
+turtle.down()
 print('Done.')
