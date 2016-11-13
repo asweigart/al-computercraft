@@ -1,6 +1,6 @@
 --[[ Dance program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Make the turtle dance! ]]
 
 print('Hello world!')
@@ -13,6 +13,7 @@ turtle.back()
 turtle.turnLeft()
 turtle.turnLeft()
 turtle.back()
+local i
 for i = 1, 5 do
   turtle.turnRight()
 end

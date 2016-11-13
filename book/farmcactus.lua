@@ -1,6 +1,6 @@
 --[[ Farm Cactus program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Automatically farms cacti. ]]
 
 os.loadAPI('hare')

@@ -1,6 +1,6 @@
 --[[ "Hare" utility library
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Provides useful utility functions. ]]
 
 hareVersion = "1"
@@ -21,8 +21,9 @@ function findItem(name)
   assert(type(name) == 'string' and name ~= '')
   
   -- first try to find an exact name match
+  local slot
   for slot = 1, 16 do
-    item = turtle.getItemDetail(slot)
+    local item = turtle.getItemDetail(slot)
     if item ~= nil and item['name'] == name then
       return slot
     end
@@ -51,7 +52,7 @@ end
 -- true if found and false if not
 function selectItem(name)
   assert(type(name) == 'string' and name ~= '')
-  slot = findItem(name)
+  local slot = findItem(name)
 
   if slot ~= nil then
     turtle.select(slot)
@@ -67,6 +68,7 @@ end
 -- if found, returns nil if no empty spaces
 function findEmptySlot()
   -- loop through all slots
+  local slot
   for slot = 1, 16 do  
     if turtle.getItemCount(slot) == 0 then
       return slot
@@ -81,7 +83,7 @@ end
 -- found, false if no empty spaces
 function selectEmptySlot()
   -- loop through all slots
-  slot = findEmptySlot()
+  local slot = findEmptySlot()
   if slot ~= nil then
     turtle.select(slot)
     return true

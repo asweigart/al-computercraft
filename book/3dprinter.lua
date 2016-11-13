@@ -1,6 +1,6 @@
 --[[ 3D Printer program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Builds based on a blueprint and legend file. ]]
 
 os.loadAPI('hare')

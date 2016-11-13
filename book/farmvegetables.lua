@@ -1,6 +1,6 @@
 --[[ Farm Vegtables program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Automatically farms carrots or potatoes. ]]
 
 --[[
@@ -14,9 +14,9 @@ in your inventory are called
 os.loadAPI('hare')
 
 -- handle command line arguments
-cliArgs = {...}
-rowsArg = tonumber(cliArgs[1])
-columnsArg = tonumber(cliArgs[2])
+local cliArgs = {...}
+local rowsArg = tonumber(cliArgs[1])
+local columnsArg = tonumber(cliArgs[2])
 
 -- display "usage" info
 if columnsArg == nil or cliArgs[1] == '?' then

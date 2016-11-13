@@ -1,6 +1,6 @@
 --[[ "Hare" utility library
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Provides useful utility functions. ]]
 
 hareVersion = "3"
@@ -21,8 +21,9 @@ function findItem(name)
   assert(type(name) == 'string' and name ~= '')
   
   -- first try to find an exact name match
+  local slot
   for slot = 1, 16 do
-    item = turtle.getItemDetail(slot)
+    local item = turtle.getItemDetail(slot)
     if item ~= nil and item['name'] == name then
       return slot
     end
@@ -51,7 +52,7 @@ end
 -- true if found and false if not
 function selectItem(name)
   assert(type(name) == 'string' and name ~= '')
-  slot = findItem(name)
+  local slot = findItem(name)
 
   if slot ~= nil then
     turtle.select(slot)
@@ -67,6 +68,7 @@ end
 -- if found, returns nil if no empty spaces
 function findEmptySlot()
   -- loop through all slots
+  local slot
   for slot = 1, 16 do  
     if turtle.getItemCount(slot) == 0 then
       return slot
@@ -81,7 +83,7 @@ end
 -- found, false if no empty spaces
 function selectEmptySlot()
   -- loop through all slots
-  slot = findEmptySlot()
+  local slot = findEmptySlot()
   if slot ~= nil then
     turtle.select(slot)
     return true
@@ -103,7 +105,8 @@ function sweepField(rows, columns, sweepFunc)
   assert(type(rows) == 'number' and rows >= 1)
   assert(type(columns) == 'number' and columns >= 1)
 
-  turnRightNext = true
+  local turnRightNext = true
+  local columnStep, rowStep
   for columnStep = 1, columns do
     if sweepFunc ~= nil then
       sweepFunc(rowStep, columnStep, rows, columns)
@@ -139,6 +142,7 @@ function sweepField(rows, columns, sweepFunc)
   end
 
   -- move back to the start
+  local i
   if columns % 2 == 0 then
     turtle.turnRight()
   else
@@ -173,6 +177,7 @@ end
 -- selectAndPlaceDown() selects a nonempty
 -- slot and places it under the turtle
 function selectAndPlaceDown()
+  local slot
   for slot = 1, 16 do
     if turtle.getItemCount(slot) > 0 then
       turtle.select(slot)
@@ -194,7 +199,8 @@ function buildWall(length, height)
 
   turtle.up()
 
-  movingForward = true
+  local movingForward = true
+  local currentHeight, currentLength
   for currentHeight = 1, height do
     for currentLength = 1, length do
       selectAndPlaceDown() -- place the block
@@ -274,9 +280,10 @@ end
 -- turtle's inventory
 function countItems(name)
   assert(type(name) == 'string' and name ~= '')
-  total = 0
+  local total = 0
+  local slot
   for slot=1,16 do
-    item = turtle.getItemDetail(slot)
+    local item = turtle.getItemDetail(slot)
     if item ~= nil and item['name'] == name then
       total = total + item['count']
     end
@@ -288,7 +295,8 @@ end
 -- countInventory() returns the total
 -- number of items in the inventory
 function countInventory()
-  total = 0
+  local total = 0
+  local slot
   for slot = 1, 16 do
     total = total + turtle.getItemCount(slot)
   end

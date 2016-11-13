@@ -1,12 +1,12 @@
 --[[ Fueling program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Consumes all in inventory fuel. ]]
 
 os.loadAPI('hare')  -- load the hare library
 
 -- keys=fuel name, values=fuel amount
-FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
+local FUEL_TABLE = {lava_bucket=1000, coal=60, planks=15, log=15}
 
 -- check if server is set to unlimited
 if turtle.getFuelLimit() == 'unlimited' then
@@ -23,6 +23,7 @@ end
 print('Fueling...')
 
 -- search for each type of fuel
+local fuelType, fuelAmount
 for fuelType, fuelAmount in pairs(FUEL_TABLE) do
   while hare.fuelSpace() > fuelAmount and hare.selectItem(fuelType) do
     if not turtle.refuel(1) then

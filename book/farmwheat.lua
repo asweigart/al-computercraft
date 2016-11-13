@@ -1,6 +1,6 @@
 --[[ Wheat Farmer program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Plants and harvests wheat.
 Assumes a field is forward and to
 the right of the turtle, with a
@@ -9,9 +9,9 @@ chest behind it. ]]
 os.loadAPI('hare')
 
 -- handle command line arguments
-cliArgs = {...}
-maxForward = tonumber(cliArgs[1])
-maxRight = tonumber(cliArgs[2])
+local cliArgs = {...}
+local maxForward = tonumber(cliArgs[1])
+local maxRight = tonumber(cliArgs[2])
 
 -- display "usage" info
 if maxRight == nil or cliArgs[1] == '?' then
@@ -23,7 +23,7 @@ end
 -- checkCrop() harvests mature wheat
 -- and plants seeds
 function checkCrop()
-  result, block = turtle.inspectDown()
+  local result, block = turtle.inspectDown()
 
   if not result then
     turtle.digDown()  -- till the soil

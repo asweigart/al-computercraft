@@ -1,6 +1,6 @@
 --[[ Cake Smash program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Uses a piston to smash a cake! ]]
 
 -- do a count down

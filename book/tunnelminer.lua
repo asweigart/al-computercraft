@@ -1,14 +1,14 @@
 --[[ Burrower program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Mines a tunnel-shaped burrow. ]]
 
 os.loadAPI('hare')
 
 -- handle command line arguments
-cliArgs = {...}
-maxLength = tonumber(cliArgs[1])
-maxHeight = tonumber(cliArgs[2])
+local cliArgs = {...}
+local maxLength = tonumber(cliArgs[1])
+local maxHeight = tonumber(cliArgs[2])
 
 -- display "usage" info
 if maxLength == nil then
@@ -23,7 +23,7 @@ end
 
 -- dig the tunnel
 print('Digging burrow...')
-currentLength = 0
+local currentLength = 0
 while currentLength < maxLength do
   print((maxLength - currentLength) .. ' meters left...')
 

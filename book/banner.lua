@@ -1,6 +1,6 @@
 --[[ Banner program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Displays a scrolling banner on the
 monitor behind the turtle. ]]
 

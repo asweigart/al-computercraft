@@ -1,6 +1,6 @@
 --[[ Fuel Gauge program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Displays fuel info nicely. ]]
 
 -- check if server is set to unlimited
@@ -16,9 +16,9 @@ io.write(turtle.getFuelLimit())
 io.write('    ')
 
 -- display fuel percentage
-amt = 100 * turtle.getFuelLevel() / turtle.getFuelLimit()
+local amt = 100 * turtle.getFuelLevel() / turtle.getFuelLimit()
 print(amt .. '%')
 
 -- display space left
-spaceLeft = turtle.getFuelLimit() - turtle.getFuelLevel()
+local spaceLeft = turtle.getFuelLimit() - turtle.getFuelLevel()
 print('Space left: ' .. spaceLeft)

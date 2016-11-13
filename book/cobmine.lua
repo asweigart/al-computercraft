@@ -1,6 +1,6 @@
 --[[ Cobblestone Miner program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Stone brick factory robot, 1 of 3 ]]
 
 os.loadAPI('hare')  -- load the hare library

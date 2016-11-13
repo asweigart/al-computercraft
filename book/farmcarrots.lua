@@ -1,6 +1,6 @@
 --[[ Farm Carrots program
 By Al Sweigart
-turtleappstore.com/users/AlSweigart
+https://turtleappstore.com/users/AlSweigart
 Automatically farms carrots.
 Assumes a field is forward and to
 the right of the turtle, with a
