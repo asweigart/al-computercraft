@@ -1,13 +1,11 @@
---[[ Dance program, version 2
-By Al Sweigart
-https://turtleappstore.com/users/AlSweigart
-Make the turtle dance! ]]
+--[[ A Better Dance program by Al Sweigart
+Make the turtle dance better! ]]
 
 isUp = false
 isBack = false
 
 print('Hold Ctrl+T to stop dancing.')
---for i = 1, 10 do
+while true do
   moveType = math.random(1, 5)
 
   if moveType == 1 then
@@ -51,5 +49,5 @@ print('Hold Ctrl+T to stop dancing.')
       turtle.turnLeft()
     end
   end
---end
+end
 print('Done.')

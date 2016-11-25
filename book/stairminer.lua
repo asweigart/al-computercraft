@@ -7,8 +7,8 @@ os.loadAPI('hare')
 
 MINIMUM_FUEL = 500 -- stops refueling after reaching this minimum
 
-cliArgs = {...}
-maxDepth = tonumber(cliArgs[1])
+local cliArgs = {...}
+local maxDepth = tonumber(cliArgs[1])
 
 -- display "usage" info
 if maxDepth == nil or cliArgs[1] == '?' then
@@ -22,12 +22,13 @@ if turtle.getFuelLevel() < 50 then
   return
 end
 
-targetDepth = 0
+local targetDepth = 0
 while true do
   -- mine while descending
+  local i
   for i = 1, targetDepth do
     -- check for bedrock
-    result, block = turtle.inspectDown()
+    local result, block = turtle.inspectDown()
     if block ~= nil and block['name'] == 'minecraft:bedrock' then
       print('Hit bedrock. Done.')
       return
@@ -57,6 +58,7 @@ while true do
     -- wait until fuel items are placed in the turtle's inventory
     while turtle.getFuelLevel() < (targetDepth * 2) do
       os.sleep(10)
+      local slot
       for slot = 1, 16 do
         if turtle.getItemCount(slot) and turtle.getFuelLevel() < MINIMUM_FUEL then
           turtle.select(slot)

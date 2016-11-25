@@ -25,7 +25,7 @@ while true do
 
   -- wait until a tree has grown
   while true do
-    result, item = turtle.inspect()
+    local result, item = turtle.inspect()
     if item ~= nil and item['name'] == 'minecraft:sapling' then
       print('Waiting for sapling to grow...')
       os.sleep(15)

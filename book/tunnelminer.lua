@@ -37,6 +37,7 @@ while currentLength < maxLength do
 
   -- ascend and dig left side
   turtle.turnLeft()
+  local i
   for i=1,maxHeight do
     hare.digUntilClear()
     if i ~= maxHeight then
